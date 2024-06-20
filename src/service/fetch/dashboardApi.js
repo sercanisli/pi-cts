@@ -1,6 +1,8 @@
+import { requestsApi } from './requestsApi'; 
+
 async function getDashboardItemsCount(){
     try {
-        const response = await fetch('https://localhost:5001/api/dashboard');
+        const response = await requestsApi('https://localhost:5001/api/dashboard');
         if(!response.ok){
             throw new Error('Failed to fetch dashboard items count');
         }

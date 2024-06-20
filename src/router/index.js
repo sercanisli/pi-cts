@@ -17,24 +17,6 @@ const router = createRouter({
                     meta: { requiresAuth: true, permissions:'Dashboard Gorme' }
                 },
                 {
-                    path: '/pages/timeline',
-                    name: 'timeline',
-                    component: () => import('@/views/pages/Timeline.vue'),
-                    meta: { requiresAuth: true }
-                },
-                {
-                    path: '/pages/empty',
-                    name: 'empty',
-                    component: () => import('@/views/pages/Empty.vue'),
-                    meta: { requiresAuth: true }
-                },
-                {
-                    path: '/pages/crud',
-                    name: 'crud',
-                    component: () => import('@/views/pages/Crud.vue'),
-                    meta: { requiresAuth: true }
-                },
-                {
                     path: '/system/user',
                     name: 'user',
                     component: () => import('@/views/pages/system/User.vue'),
@@ -88,23 +70,12 @@ const router = createRouter({
                     component: () => import('@/views/pages/auth/Access.vue')
                 },
                 {
-                    path: '/:catchAll(.*)',
-                    name: 'notfound',
-                    component: () => import('@/views/pages/NotFound.vue')
-                },
-                {
                     path: '/auth/settings',
                     name: 'settings',
                     component: () => import('@/views/pages/auth/Settings.vue'),
                     meta: { requiresAuth: true}
                 }
             ]
-        },
-        {
-            path: '/landing',
-            name: 'landing',
-            component: () => import('@/views/pages/Landing.vue'),
-            meta: { requiresAuth: true }
         },
         {
             path: '/auth/login',
