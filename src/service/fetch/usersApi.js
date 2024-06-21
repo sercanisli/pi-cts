@@ -2,7 +2,7 @@ import { requestsApi } from './requestsApi';
 
 async function getAllUsers(){
     try {
-        const response = await requestsApi('https://localhost:5001/api/users/GetAllUserAsync');
+        const response = await requestsApi('users/GetAllUserAsync');
         return response.json(9);
     } catch (error) {
         console.error('Error fetching users', error.message);
@@ -12,7 +12,7 @@ async function getAllUsers(){
 
 async function getOneUserById(id){
     try {
-        const response = await requestsApi(`https://localhost:5001/api/users/${id}`);
+        const response = await requestsApi(`users/${id}`);
         return response.json();
     } catch (error) {
         console.error('Error fetching user', error.message);
@@ -22,7 +22,7 @@ async function getOneUserById(id){
 
 async function getOneUserByIdForSettings(id){
     try {
-        const response = await requestsApi(`https://localhost:5001/api/users/${id}`);
+        const response = await requestsApi(`users/${id}`);
         if(!response.ok){
             throw new Error('Failed to Get One User for Settings');
         }
@@ -35,7 +35,7 @@ async function getOneUserByIdForSettings(id){
 
 async function getOneUserByUserName(userName){
     try {
-        const response = await requestsApi('https://localhost:5001/api/users/GetOneUserByUserNameAsync', {
+        const response = await requestsApi('users/GetOneUserByUserNameAsync', {
             method:'POST',
             body: JSON.stringify(userName)
         });
@@ -48,7 +48,7 @@ async function getOneUserByUserName(userName){
 
 async function getOneUserByNameForSettings(userName){
     try {
-        const response = await requestsApi('https://localhost:5001/api/users/GetOneUserByNameForSettingsAsync', {
+        const response = await requestsApi('users/GetOneUserByNameForSettingsAsync', {
             method:'POST',
             body: JSON.stringify(userName)
         });
@@ -61,11 +61,10 @@ async function getOneUserByNameForSettings(userName){
 
 async function createOneUser(user){
     try {
-        const response = await requestsApi('https://localhost:5001/api/users', {
+        const response = await requestsApi('users', {
             method : 'POST',
             body: JSON.stringify(user),
         });
-        console.log(response)
         return response;
 
     } catch (error) {
@@ -76,7 +75,7 @@ async function createOneUser(user){
 
 async function updateUser(id, newUser){
     try {
-        const response = await requestsApi(`https://localhost:5001/api/users/${id}`, {
+        const response = await requestsApi(`users/${id}`, {
             method:'PUT',
             body: JSON.stringify(newUser),
         });
@@ -89,7 +88,7 @@ async function updateUser(id, newUser){
 
 async function updateUserForSettings(id, newUser){
     try {
-        const response = await requestsApi(`https://localhost:5001/api/users/UpdateOneUserForSettings/${id}`, {
+        const response = await requestsApi(`users/UpdateOneUserForSettings/${id}`, {
             method:'PUT',
             body: JSON.stringify(newUser),
         });
@@ -103,7 +102,7 @@ async function updateUserForSettings(id, newUser){
 
 async function deleteUser(id){
     try {
-        const response = await requestsApi(`https://localhost:5001/api/users/${id}`, {
+        const response = await requestsApi(`users/${id}`, {
             method:'DELETE'
         });
         return response.status;

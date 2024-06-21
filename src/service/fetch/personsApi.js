@@ -2,7 +2,7 @@ import { requestsApi } from './requestsApi';
 
 async function getAllPersons(){
     try {
-        const response = await requestsApi('https://localhost:5001/api/persons/GetAllPersonsAsync');
+        const response = await requestsApi('persons/GetAllPersonsAsync');
         return response.json();
     } catch (error) {
         console.error('Error fetching persons', error.message);
@@ -12,7 +12,7 @@ async function getAllPersons(){
 
 async function getOnePerson(id){
     try {
-        const response = await requestsApi(`https://localhost:5001/api/persons/${id}`);
+        const response = await requestsApi(`persons/${id}`);
         return response.json();
     } catch (error) {
         console.error(`Error fetching person with id: ${id}`);
@@ -22,7 +22,7 @@ async function getOnePerson(id){
 
 async function createPerson(personData){
     try {
-        const response = await requestsApi('https://localhost:5001/api/persons', {
+        const response = await requestsApi('persons', {
             method:'POST',
             body: JSON.stringify(personData),
         });
@@ -35,7 +35,7 @@ async function createPerson(personData){
 
 async function updatePerson(id, personData){
     try {
-        const response = await requestsApi(`https://localhost:5001/api/persons/${id}`, {
+        const response = await requestsApi(`persons/${id}`, {
             method:'PUT',
             body:JSON.stringify(personData),
         });
@@ -48,7 +48,7 @@ async function updatePerson(id, personData){
 
 async function deletePerson(id){
     try {
-        const response = await requestsApi(`https://localhost:5001/api/persons/${id}`, {
+        const response = await requestsApi(`persons/${id}`, {
             method:'DELETE'
         });
         return response.status;

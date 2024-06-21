@@ -2,7 +2,7 @@ import { requestsApi } from './requestsApi';
 
 async function getAllUserBranches(id){
     try {
-        const response = await requestsApi(`https://localhost:5001/api/userbranches/${id}`);
+        const response = await requestsApi(`userbranches/${id}`);
         return response.json();
     } catch (error) {
         console.error('Error fetching user branches', error.message);
@@ -12,7 +12,7 @@ async function getAllUserBranches(id){
 
 async function updateUserBranches(id, newUserBranches) {
     try {
-        const response = await requestsApi(`https://localhost:5001/api/userbranches/${id}`, {
+        const response = await requestsApi(`userbranches/${id}`, {
             method:'PUT',
             body: JSON.stringify(newUserBranches),
         });

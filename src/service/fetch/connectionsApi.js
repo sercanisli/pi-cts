@@ -2,7 +2,7 @@ import { requestsApi } from './requestsApi';
 
 async function getAllConnections() {
     try {
-        const response = await requestsApi('https://localhost:5001/api/connections/getAllConnectionsAsync');
+        const response = await requestsApi('connections/getAllConnectionsAsync');
         return response.json();
     } catch (error) {
         console.error('Error fetching connections:', error.message);
@@ -12,7 +12,7 @@ async function getAllConnections() {
 
 async function getAllConnectionsByBranchId() {
     try {
-        const response = await requestsApi('https://localhost:5001/api/connections/GetAllConnectionsByBrachIdAsync');
+        const response = await requestsApi('connections/GetAllConnectionsByBrachIdAsync');
         return response.json();
     } catch (error) {
         console.error('Error fetching connections:', error.message);
@@ -22,7 +22,7 @@ async function getAllConnectionsByBranchId() {
 
 async function getOneConnections(id) {
     try {
-        const response = await requestsApi(`https://localhost:5001/api/connections/${id}`);
+        const response = await requestsApi(`connections/${id}`);
         return response.json();
     } catch (error) {
         console.error('Error fetching connection:', error.message);
@@ -32,7 +32,7 @@ async function getOneConnections(id) {
 
 async function createConnection(connectionData) {
     try {
-        const response = await requestsApi('https://localhost:5001/api/connections', {
+        const response = await requestsApi('connections', {
             method: 'POST',
             body: JSON.stringify(connectionData),
         });
@@ -45,7 +45,7 @@ async function createConnection(connectionData) {
 
 async function updateConnection(id, connectionData) {
     try {
-        const response = await requestsApi(`https://localhost:5001/api/connections/${id}`, {
+        const response = await requestsApi(`connections/${id}`, {
             method: 'PUT',
             body: JSON.stringify(connectionData),
         });
@@ -58,7 +58,7 @@ async function updateConnection(id, connectionData) {
 
 async function deleteConnection(id) {
     try {
-        const response = await requestsApi(`https://localhost:5001/api/connections/${id}`, {
+        const response = await requestsApi(`connections/${id}`, {
             method: 'DELETE',
         });
         return response.status;

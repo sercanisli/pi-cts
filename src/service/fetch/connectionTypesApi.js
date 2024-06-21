@@ -2,7 +2,7 @@ import { requestsApi } from './requestsApi';
 
 async function getAllConnectionTypes(){
     try {
-        const response = await requestsApi('https://localhost:5001/api/connectiontypes/GetAllConnectionTypesAsync');
+        const response = await requestsApi('connectiontypes/GetAllConnectionTypesAsync');
         return response.json();
     } catch (error) {
         console.error('Error fetching connection types', error.message);
@@ -12,10 +12,7 @@ async function getAllConnectionTypes(){
 
 async function getAllLimitedConnectionTypes(){
     try {
-        const response = await fetch('https://localhost:5001/api/connectiontypes/GetAllLimitedConnectionTypesAsync');
-        if(!response.ok){
-            throw new Error('Failed to fetching all limited connection types');
-        }
+        const response = await requestsApi('connectiontypes/GetAllLimitedConnectionTypesAsync');
         return response.json();
     } catch (error) {
         console.error('Error fetching all limited connection types: ', error.message);
@@ -25,7 +22,7 @@ async function getAllLimitedConnectionTypes(){
 
 async function getOneConnectionType(id){
     try {
-        const response = await requestsApi(`https://localhost:5001/api/connectiontypes/${id}`);
+        const response = await requestsApi(`connectiontypes/${id}`);
         return response.json();
     } catch (error) {
         console.error(`Error fetching connection type with id : ${id}:`, error.message);
@@ -35,7 +32,7 @@ async function getOneConnectionType(id){
 
 async function createConnectionType(connectionTypeData){
     try {
-        const response = await requestsApi('https://localhost:5001/api/connectiontypes', {
+        const response = await requestsApi('connectiontypes', {
             method:'POST',
             body: JSON.stringify(connectionTypeData),
         });
@@ -48,7 +45,7 @@ async function createConnectionType(connectionTypeData){
 
 async function updateConnectionType(id, connectionTypeData){
     try {
-        const response = await requestsApi (`https://localhost:5001/api/connectiontypes/${id}`, {
+        const response = await requestsApi (`connectiontypes/${id}`, {
             method:'PUT',
             body: JSON.stringify(connectionTypeData),
         });
@@ -61,7 +58,7 @@ async function updateConnectionType(id, connectionTypeData){
 
 async function deleteConnectionType(id){
     try {
-        const response = await requestsApi(`https://localhost:5001/api/connectiontypes/${id}`, {
+        const response = await requestsApi(`connectiontypes/${id}`, {
             method:'DELETE',
         });
         return response.status;

@@ -1,6 +1,8 @@
+import { requestsApi } from './requestsApi'; 
+
 async function getAllSearchCounts(){
     try {
-        const response = await fetch('https://localhost:5001/api/searchcounts');
+        const response = await requestsApi('searchcounts');
         if(!response.ok){
             throw new Error('Failed to fetch search counts');
         }
@@ -13,7 +15,7 @@ async function getAllSearchCounts(){
 
 async function updateSearchCount(searchCountData){
     try {
-        const response = await fetch('https://localhost:5001/api/searchcounts',{
+        const response = await requestsApi('searchcounts',{
             method:'PUT',
             headers: {
                 'Content-Type': 'application/json',

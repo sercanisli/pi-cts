@@ -46,6 +46,10 @@ onBeforeUnmount(() => {
     unbindOutsideClickListener();
 });
 
+const onTopBarMenuButton= () => {
+    topbarMenuActive.value = !topbarMenuActive.value;
+}
+
 const onChangeTheme = (theme, mode) => {
     $primevue.changeTheme(layoutConfig.theme.value, theme, 'theme-css', () => {
         layoutConfig.theme.value = theme;
@@ -232,7 +236,6 @@ const getUsernameFromUserInfo = (userInfo) => {
     <div class="layout-topbar">
         <router-link to="/" class="layout-topbar-logo">
             <img :src="logoUrl" alt="logo" />
-            <span>CTS</span>
         </router-link>
 
         <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">

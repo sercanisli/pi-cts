@@ -2,7 +2,7 @@ import { requestsApi } from './requestsApi';
 
 async function getAllMainRoots() {
     try {
-        const response = await requestsApi('https://localhost:5001/api/mainroots/GetAllMainRootsAsync');
+        const response = await requestsApi('mainroots/GetAllMainRootsAsync');
         return response.json();
     } catch (error) {
         console.error('Error fetching main roots', error.message);
@@ -12,7 +12,7 @@ async function getAllMainRoots() {
 
 async function getOneMainRoot(id){
     try {
-        const response = await requestsApi(`https://localhost:5001/api/mainroots/${id}`);
+        const response = await requestsApi(`mainroots/${id}`);
         return response.json();
     } catch (error) {
         console.error(`Error fetching main root with id : ${id}:`, error.message);
@@ -22,7 +22,7 @@ async function getOneMainRoot(id){
 
 async function createMainRoot(mainRootData){
     try {
-        const response = await requestsApi('https://localhost:5001/api/mainroots', {
+        const response = await requestsApi('mainroots', {
             method:'POST',
             body: JSON.stringify(mainRootData),
         });
@@ -35,7 +35,7 @@ async function createMainRoot(mainRootData){
 
 async function updateMainRoot(id, mainRootData){
     try {
-        const response = await requestsApi(`https://localhost:5001/api/mainroots/${id}`, {
+        const response = await requestsApi(`mainroots/${id}`, {
             method:'PUT',
             body: JSON.stringify(mainRootData),
         });
@@ -48,7 +48,7 @@ async function updateMainRoot(id, mainRootData){
 
 async function deleteMainRoot(id){
     try {
-        const response = await requestsApi(`https://localhost:5001/api/mainroots/${id}`, {
+        const response = await requestsApi(`mainroots/${id}`, {
             method:'DELETE',
         });
         return response.status;

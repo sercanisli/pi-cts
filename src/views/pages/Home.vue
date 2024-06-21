@@ -111,7 +111,6 @@ export default {
         getAllConnectionsByBranchId() {
             getAllConnectionsByBranchId().then((data) => {
                 this.connections = data;
-                console.log(this.connections);
                 this.connections.forEach((detail) => {
                     let isUniqueCompanies = true;
                     this.companies.forEach((company) => {

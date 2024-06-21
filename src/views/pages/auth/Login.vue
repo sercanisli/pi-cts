@@ -24,7 +24,7 @@ export default {
             }
             catch (error) {
                 if (error.message.includes('Unauthorized')) {
-                    console.log('Unauthorized error occurred');
+                    console.error('Unauthorized error occurred');
                 } else {
                     console.error('An error occurred during authentication:', error.message);
                 }

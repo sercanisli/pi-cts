@@ -2,7 +2,7 @@ import { requestsApi } from './requestsApi';
 
 async function getAllBranchMainRoots() {
     try {
-        const response = await requestsApi('https://localhost:5001/api/branchmainroots/GetAllBranchMainRootsAsync');
+        const response = await requestsApi('branchmainroots/GetAllBranchMainRootsAsync');
         return response.json();
     } catch (error) {
         console.error('Error fetching branch main roots', error.message);
@@ -12,7 +12,7 @@ async function getAllBranchMainRoots() {
 
 async function getOneBranchMainRoot(id){
     try {
-        const response = await requestsApi(`https://localhost:5001/api/branchmainroots/${id}`);
+        const response = await requestsApi(`branchmainroots/${id}`);
         return response.json();
     } catch (error) {
         console.error(`Error fetching branch main root with id : ${id}:`, error.message);
@@ -22,7 +22,7 @@ async function getOneBranchMainRoot(id){
 
 async function createBranchMainRoot(branchMainRootData){
     try {
-        const response = await requestsApi('https://localhost:5001/api/branchmainroots', {
+        const response = await requestsApi('branchmainroots', {
             method:'POST',
             body: JSON.stringify(branchMainRootData),
         });
@@ -35,7 +35,7 @@ async function createBranchMainRoot(branchMainRootData){
 
 async function updateBranchMainRoot(id, branchMainRootData){
     try {
-        const response = await requestsApi(`https://localhost:5001/api/branchmainroots/${id}`, {
+        const response = await requestsApi(`branchmainroots/${id}`, {
             method:'PUT',
             body: JSON.stringify(branchMainRootData),
         });
@@ -48,7 +48,7 @@ async function updateBranchMainRoot(id, branchMainRootData){
 
 async function deleteBranchMainRoot(id){
     try {
-        const response = await requestsApi(`https://localhost:5001/api/branchmainroots/${id}`, {
+        const response = await requestsApi(`branchmainroots/${id}`, {
             method:'DELETE',
         });
         return response.status;

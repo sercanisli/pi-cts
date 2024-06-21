@@ -2,7 +2,7 @@ import { requestsApi } from './requestsApi';
 
 async function getAllBranchChildRoots(){
     try {
-        const response = await requestsApi('https://localhost:5001/api/branchmainroots/GetAllBranchMainRootsWithDeletedAsync');
+        const response = await requestsApi('branchmainroots/GetAllBranchMainRootsWithDeletedAsync');
         return response.json();
     } catch (error) {
         console.error('Error fetching branch child roots', error.message);
@@ -12,7 +12,7 @@ async function getAllBranchChildRoots(){
 
 async function getOneBranchChildRoot(id){
     try {
-        const response = await requestsApi(`https://localhost:5001/api/branchchildroots/${id}`);
+        const response = await requestsApi(`branchchildroots/${id}`);
         return response.json();
     } catch (error) {
         console.error(`Error fetching branch child root with id : ${id}:`, error.message);
@@ -22,7 +22,7 @@ async function getOneBranchChildRoot(id){
 
 async function createBranchChildRoot(branchChildRootData){
     try {
-        const response = await requestsApi('https://localhost:5001/api/branchchildroots',{
+        const response = await requestsApi('branchchildroots',{
             method:'POST',
             body:JSON.stringify(branchChildRootData),
         });
@@ -35,7 +35,7 @@ async function createBranchChildRoot(branchChildRootData){
 
 async function updateBranchChildRoot(id, branchChildRootData){
     try {
-        const response = await requestsApi(`https://localhost:5001/api/branchchildroots/${id}`, {
+        const response = await requestsApi(`branchchildroots/${id}`, {
             method:'PUT',
             body:JSON.stringify(branchChildRootData),
         });
@@ -48,7 +48,7 @@ async function updateBranchChildRoot(id, branchChildRootData){
 
 async function deleteBranchChildRoot(id){
     try {
-        const response = await requestsApi(`https://localhost:5001/api/branchchildroots/${id}`, {
+        const response = await requestsApi(`branchchildroots/${id}`, {
             method:'DELETE',
         });
         return response.status;

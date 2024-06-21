@@ -1,16 +1,16 @@
+import { requestsApi } from './requestsApi'; 
+
 async function authenticate(user) {
     try {
-        const response = await fetch('https://localhost:5001/api/authentication/login', {
+        const response = await requestsApi('authentication/login', {
             credentials:'include',  
             method:'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(user),
+            mode:'cors'
         });
-        if(!response.ok){
-            throw new Error('Failed to login: Unauthorized');
-        }
         const data = await response.json();
         localStorage.setItem('accessToken', data.accessToken);
         document.cookie = `accessToken=${data.accessToken}`;
@@ -31,13 +31,14 @@ async function authenticate(user) {
 
 async function logout(user){
     try {
-        const response = await fetch('https://localhost:5001/api/authentication/logout',{
+        const response = await requestsApi('authentication/logout',{
             credentials:'include',
             method:'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(user),
+            mode:'cors'
         });
         if(!response.ok){
             throw new Error('Failed to logout');
@@ -52,7 +53,6 @@ async function logout(user){
         document.cookie = 'refreshTokenExpiryTime=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         document.cookie = 'userName=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         document.cookie = 'userPermissions=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-
     } catch (error) {
         console.error('Error logout', error.message);
     }
@@ -60,17 +60,15 @@ async function logout(user){
 
 async function refresh(token){
     try {
-        const response = await fetch('https://localhost:5001/api/authentication/refresh', {
+        const response = await requestsApi('authentication/refresh', {
             credentials:'include',
             method:'POST',
             headers:{
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(token),
+            mode:'cors'
         });
-        if(!response.ok){
-            throw new Error('Failed to refresh');
-        }
         const data = await response.json();
         localStorage.setItem('accessToken', data.accessToken);
         document.cookie = `accessToken=${data.accessToken}`;

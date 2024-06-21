@@ -23,7 +23,7 @@ async function requestsApi(url, options = {}) {
             credentials:credentials,
             ...options
         }
-        const response = await fetch(url, options);
+        const response = await fetch(`/api/`+url, options);
         redirectTo(response.status);
         return response;
 }

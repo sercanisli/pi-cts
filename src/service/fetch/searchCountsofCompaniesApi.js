@@ -1,6 +1,8 @@
+import { requestsApi } from './requestsApi'; 
+
 async function getAllSearchCountsofCompanies(){
     try {
-        const response = await fetch('https://localhost:5001/api/searchcountsofcompanies');
+        const response = await requestsApi('searchcountsofcompanies');
         if(!response.ok){
             throw new Error('Failed to fetch search counts of companies');
         }
@@ -13,7 +15,7 @@ async function getAllSearchCountsofCompanies(){
 
 async function updateSearchCountsofCompanies(searchcountsofcompanies){
     try {
-        const response = await fetch('https://localhost:5001/api/searchcountsofcompanies',{
+        const response = await requestsApi('searchcountsofcompanies',{
             method:'PUT',
             headers: {
                 'Content-Type': 'application/json',

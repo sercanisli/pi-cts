@@ -2,8 +2,7 @@ import { requestsApi } from './requestsApi';
 
 async function getAllBranches() {
     try {
-        const response = await requestsApi('https://localhost:5001/api/branches/GetAllBranchesAsync', {
-        });
+        const response = await requestsApi('branches/GetAllBranchesAsync', );
         return response.json();;
     } catch (error) {
         console.error('Error fetching branches', error.message);
@@ -13,10 +12,7 @@ async function getAllBranches() {
 
 async function getAllLimitedBranches(){
     try {
-        const response = await fetch('https://localhost:5001/api/branches/GetAllLimitedBranchesAsync');
-        if(!response.ok){
-            throw new Error('Failed to fetching all limited branches');
-        }
+        const response = await requestsApi('branches/GetAllLimitedBranchesAsync');
         return response.json();
     } catch (error) {
         console.error('Error fetching all limited branches:', error.message);
@@ -26,7 +22,7 @@ async function getAllLimitedBranches(){
 
 async function getOneBranch(id) {
     try {
-        const response = await requestsApi(`https://localhost:5001/api/branches/${id}`);
+        const response = await requestsApi(`branches/${id}`);
         return response.json();
     } catch (error) {
         console.error(`Error fetching branch with id : ${id}`, error.message);
@@ -36,7 +32,7 @@ async function getOneBranch(id) {
 
 async function createBranch(branchData) {
     try {
-        const response = await requestsApi('https://localhost:5001/api/branches', {
+        const response = await requestsApi('branches', {
             method: 'POST',
             body: JSON.stringify(branchData),
         });
@@ -49,7 +45,7 @@ async function createBranch(branchData) {
 
 async function updateBranch(id, branchData) {
     try {
-        const response = await requestsApi(`https://localhost:5001/api/branches/${id}`, {
+        const response = await requestsApi(`branches/${id}`, {
             method: 'PUT',
             body: JSON.stringify(branchData),
         });
@@ -62,7 +58,7 @@ async function updateBranch(id, branchData) {
 
 async function deleteBranch(id) {
     try {
-        const response = await requestsApi(`https://localhost:5001/api/branches/${id}`, {
+        const response = await requestsApi(`branches/${id}`, {
             method: 'DELETE'
         });
         return response.status;

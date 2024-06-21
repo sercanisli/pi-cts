@@ -2,7 +2,7 @@ import { requestsApi } from './requestsApi';
 
 async function getAllCompanies() {
     try {
-        const response = await requestsApi('https://localhost:5001/api/companies/GetAllCompaniesAsync');
+        const response = await requestsApi('companies/GetAllCompaniesAsync');
         return response.json();
     } catch (error) {
         console.error('Error fetching companies', error.message);
@@ -12,10 +12,7 @@ async function getAllCompanies() {
 
 async function getAllLimitedCompanies(){
     try {
-        const response = await fetch('https://localhost:5001/api/companies/GetAllLimitedCompaniesAsync');
-        if(!response.ok){
-            throw new Error('Failed fetching limited companies');
-        }
+        const response = await requestsApi('companies/GetAllLimitedCompaniesAsync');
         const data = response.json();
         return data;
     } catch (error) {
@@ -25,7 +22,7 @@ async function getAllLimitedCompanies(){
 
 async function getOneCompany(id){
     try {
-        const response = await requestsApi(`https://localhost:5001/api/companies/${id}`);
+        const response = await requestsApi(`companies/${id}`);
         return response.json();
     } catch (error) {
         console.error(`Error fetching company with id : ${id} :`, error.message);
@@ -35,7 +32,7 @@ async function getOneCompany(id){
 
 async function createCompany(companyData){
     try {
-        const response = await requestsApi('https://localhost:5001/api/companies', {
+        const response = await requestsApi('companies', {
             method: 'POST',
             body: JSON.stringify(companyData),
         });
@@ -48,7 +45,7 @@ async function createCompany(companyData){
 
 async function updateCompany(id, companyData) {
     try {
-        const response = await requestsApi(`https://localhost:5001/api/companies/${id}`, {
+        const response = await requestsApi(`companies/${id}`, {
             method:'PUT',
             body: JSON.stringify(companyData),
         });
@@ -61,7 +58,7 @@ async function updateCompany(id, companyData) {
 
 async function deleteCompany(id){
     try {
-        const response = await requestsApi(`https://localhost:5001/api/companies/${id}`,{
+        const response = await requestsApi(`companies/${id}`,{
             method:'DELETE',
         });
         return response.status;

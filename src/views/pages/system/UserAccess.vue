@@ -107,7 +107,6 @@ export default {
             await getAllUserBranches(id)
                 .then((data) => {
                     this.userBranches = data;
-                    console.log(this.userBranches)
                 }).then(() => {
                     this.getAllBranchMainRoots();
                 })
