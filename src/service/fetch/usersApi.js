@@ -3,7 +3,7 @@ import { requestsApi } from './requestsApi';
 async function getAllUsers(){
     try {
         const response = await requestsApi('users/GetAllUserAsync');
-        return response.json(9);
+        return response.json();
     } catch (error) {
         console.error('Error fetching users', error.message);
         throw error;
@@ -99,6 +99,19 @@ async function updateUserForSettings(id, newUser){
     }
 }
 
+async function updateUserStatus(user){
+    try {
+        const response = await requestsApi('users/UpdateOneUserStatusAsync', {
+            method : 'PUT',
+            body: JSON.stringify(user)
+        });
+        return response.status;
+    } catch (error) {
+        console.error('Error changing a user status:', error.message);
+        throw error;
+    }
+}
+
 
 async function deleteUser(id){
     try {
@@ -112,4 +125,4 @@ async function deleteUser(id){
     }
 }
 
-export {getAllUsers, getOneUserById, getOneUserByIdForSettings, getOneUserByUserName, getOneUserByNameForSettings, createOneUser, updateUser, updateUserForSettings, deleteUser}
+export {getAllUsers, getOneUserById, getOneUserByIdForSettings, getOneUserByUserName, getOneUserByNameForSettings, createOneUser, updateUser, updateUserForSettings, updateUserStatus, deleteUser}

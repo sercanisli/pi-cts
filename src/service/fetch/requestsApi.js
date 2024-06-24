@@ -1,10 +1,13 @@
+import router from '@/router'
+
 function redirectTo(status) {
+    console.log(status);
     switch (status) {
         case 401:
-            window.location.href='/auth/login';
+            router.push({ name: 'login'});
             break;
         case 403:
-            window.location.href='/auth/access';
+            router.push({ name: 'accessDenied'});
             break;
         default:
             break;
@@ -23,7 +26,7 @@ async function requestsApi(url, options = {}) {
             credentials:credentials,
             ...options
         }
-        const response = await fetch(`/api/`+url, options);
+        const response = await fetch('/api/'+url, options); 
         redirectTo(response.status);
         return response;
 }

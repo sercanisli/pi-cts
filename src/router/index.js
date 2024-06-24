@@ -1,9 +1,9 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router';
 import AppLayout from '@/layout/AppLayout.vue';
 import auth from './auth';
 
 const router = createRouter({
-    history: createWebHistory(),
+    history: createWebHashHistory(),
     routes: [
         {
             path: '/',
@@ -14,49 +14,49 @@ const router = createRouter({
                     path: '/',
                     name: 'dashboard',
                     component: () => import('@/views/Dashboard.vue'),
-                    meta: { requiresAuth: true, permissions:'Dashboard Gorme' }
+                    meta: { requiresAuth: true, permissions: 'Dashboard Gorme' }
                 },
                 {
                     path: '/system/user',
                     name: 'user',
                     component: () => import('@/views/pages/system/User.vue'),
-                    meta: { requiresAuth: true, permissions:'Kullanicilari Gorme' }
+                    meta: { requiresAuth: true, permissions: 'Kullanicilari Gorme' }
                 },
                 {
                     path: '/system/user/access/:userId',
                     name: 'access',
                     component: () => import('@/views/pages/system/UserAccess.vue'),
-                    meta: { requiresAuth: true, permissions:'Kullanicilari Gorme' }
+                    meta: { requiresAuth: true, permissions: 'Kullanicilari Gorme' }
                 },
                 {
                     path: '/system/company',
                     name: 'company',
                     component: () => import('@/views/pages/system/Company.vue'),
-                    meta: { requiresAuth: true, permissions:'Firmalari Gorme'}
+                    meta: { requiresAuth: true, permissions: 'Firmalari Gorme' }
                 },
                 {
                     path: '/system/branch',
                     name: 'branch',
                     component: () => import('@/views/pages/system/Branch.vue'),
-                    meta: { requiresAuth: true, permissions:'Şubeleri Gorme' }
+                    meta: { requiresAuth: true, permissions: 'Şubeleri Gorme' }
                 },
                 {
                     path: '/system/person',
                     name: 'person',
                     component: () => import('@/views/pages/system/Person.vue'),
-                    meta: { requiresAuth: true, permissions:'Yetkili Kişileri Gorme' }
+                    meta: { requiresAuth: true, permissions: 'Yetkili Kişileri Gorme' }
                 },
                 {
                     path: '/system/connection',
                     name: 'connection',
                     component: () => import('@/views/pages/system/Connection.vue'),
-                    meta: { requiresAuth: true, permissions:'Bağlantilari Gorme'}
+                    meta: { requiresAuth: true, permissions: 'Bağlantilari Gorme' }
                 },
                 {
                     path: '/system/connection-type',
                     name: 'connectionType',
                     component: () => import('@/views/pages/system/ConnectionType.vue'),
-                    meta: { requiresAuth: true, permissions:'Bağlanti Tipi Gorme' }
+                    meta: { requiresAuth: true, permissions: 'Bağlanti Tipi Gorme' }
                 },
                 {
                     path: '/home',
@@ -73,7 +73,7 @@ const router = createRouter({
                     path: '/auth/settings',
                     name: 'settings',
                     component: () => import('@/views/pages/auth/Settings.vue'),
-                    meta: { requiresAuth: true}
+                    meta: { requiresAuth: true }
                 }
             ]
         },
@@ -90,9 +90,10 @@ const router = createRouter({
         
     ]
 });
-
+const accessToken = auth.isAuthenticated();
+console.log(accessToken);
 router.beforeEach((to, from, next) => {
-    if (to.matched.some(record => record.meta.requiresAuth) && !auth.isAuthenticated()) {
+    if (to.matched.some(record => record.meta.requiresAuth) && !accessToken) {
         next({ name: 'login' });
     } else {
         if (to.meta.permissions) {
@@ -101,12 +102,12 @@ router.beforeEach((to, from, next) => {
             if (requiredPermissions.some(permission => userPermissions.includes(permission))) {
                 next();
             } else {
-                next({ name: 'accessDenied' }); 
+                next({ name: 'accessDenied' });
             }
         } else {
             next(); 
         }
     }
-})
+});
 
 export default router;

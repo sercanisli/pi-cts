@@ -14,10 +14,6 @@ import AppConfig from '@/layout/AppConfig.vue';
                         <h1 class="text-900 font-bold text-5xl mb-2">Hata Oluştu</h1>
                         <span class="text-600 mb-5"> Talep edilen kaynak mevcut değil.</span>
                         <img src="/demo/images/error/asset-error.svg" alt="Error" class="mb-5" width="80%" />
-                        <div class="col-12 mt-5 text-center">
-                            <i class="pi pi-fw pi-arrow-left text-blue-500 mr-2" style="vertical-align: center"></i>
-                            <router-link to="/auth/login" class="text-blue-500">Giriş Ekranı</router-link>
-                        </div>
                     </div>
                 </div>
             </div>

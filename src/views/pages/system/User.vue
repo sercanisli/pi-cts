@@ -31,11 +31,15 @@
                             </IconField>
                         </div>
                     </template>
-                    <Column field="id"  header="" style="width: 0%"></Column>
-                    <Column field="userName" header="Kullanıcı Adı" style="width: 30%"></Column>
+                    <Column field="userName" header="Kullanıcı Adı" style="width: 20%"></Column>
                     <Column field="firstName" header="Adı" style="width: 20%"></Column>
                     <Column field="lastName" header="Soy Adı" style="width: 20%"></Column>
-                    <Column style="width: 15%">
+                    <Column field="isDeleted" header="Kullanıcı Durumu" style="width: 20%">
+                        <template #body="{ data }">
+                            <InputSwitch v-model="data.isDeleted" @change="updateUserStatus(data)"/>
+                        </template>
+                    </Column>
+                    <Column style="width: 20% justify-content-end">
                         <template #body="slotProps">
                             <Button icon="pi pi-pencil" class="mr-2" severity="success" rounded @click="editUser(slotProps.data)" />
                             <Button icon="pi pi-shield" class="mr-2" severity="info" rounded @click="accessUser(slotProps.data)" />
@@ -90,7 +94,7 @@
 
 
 <script>
-import { getAllUsers, createOneUser, updateUser, deleteUser } from '../../../service/fetch/usersApi';
+import { getAllUsers, createOneUser, updateUser, updateUserStatus, deleteUser } from '../../../service/fetch/usersApi';
 
 import { useToast } from 'primevue/usetoast';
 export default {
@@ -109,7 +113,7 @@ export default {
             confirmPassword:'',
             deleteUserDialog:false,
             globalFilter:'',
-            errors:[]
+            errors:[],
         }
     },
     methods: {
@@ -220,6 +224,23 @@ export default {
             }
             this.clearUserDialog();
             this.cancelClick();
+        },
+        async updateUserStatus(user) {
+            try {
+                const newUserStatus = {
+                    id:user.id,
+                    isDeleted:user.isDeleted
+                }
+                const response = await updateUserStatus(newUserStatus);
+                if (response === 204) {
+                    this.$toast.add({ severity: 'success', summary: 'Successful', detail: 'User status updated', life: 3000 });
+                } else {
+                    this.$toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to update user status', life: 3000 });
+                }
+            } catch (error) {
+                console.error('Error updating user status:', error);
+                this.$toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to update user status', life: 3000 });
+            }
         },
         accessUser(user){
             this.$router.push({ name: 'access', params: { userId: user.id } });

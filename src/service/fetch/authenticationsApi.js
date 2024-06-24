@@ -9,7 +9,6 @@ async function authenticate(user) {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(user),
-            mode:'cors'
         });
         const data = await response.json();
         localStorage.setItem('accessToken', data.accessToken);
@@ -38,7 +37,6 @@ async function logout(user){
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(user),
-            mode:'cors'
         });
         if(!response.ok){
             throw new Error('Failed to logout');
@@ -67,7 +65,6 @@ async function refresh(token){
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(token),
-            mode:'cors'
         });
         const data = await response.json();
         localStorage.setItem('accessToken', data.accessToken);

@@ -1,5 +1,7 @@
 <script>
 import {logout, refresh} from './service/fetch/authenticationsApi';
+import { useRouter } from 'vue-router';
+
 export default {
   name: 'App',
   emits:['routeChange'],
@@ -8,7 +10,7 @@ export default {
     };
   },
   methods: {
-     logoutUser(user){
+    logoutUser(user){
         this.$emit('routeChange');
         logout(user);
     },
@@ -19,6 +21,7 @@ export default {
             accessToken:accessToken,
             refreshToken:refreshToken
         }
+        
         refresh(token);
     },
     checkRefreshTokenExpiry() {
