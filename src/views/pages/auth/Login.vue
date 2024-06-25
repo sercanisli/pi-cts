@@ -1,5 +1,8 @@
 <script>
 import { authenticate } from "../../../service/fetch/authenticationsApi";
+import router from '@/router'
+
+
 
 export default {
   data() {
@@ -20,7 +23,7 @@ export default {
         const data = await authenticate(user);
         if (data.accessToken) {
           if (data.isActive === true) {
-            this.$router.push("/home");
+            router.push({name : 'home'});
           } else {
             this.errors.push("Kullanıcı Aktif Değil. Yöneticinizle iletişime geçin..");
           }

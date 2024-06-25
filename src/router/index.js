@@ -91,7 +91,6 @@ const router = createRouter({
     ]
 });
 const accessToken = auth.isAuthenticated();
-console.log(accessToken);
 router.beforeEach((to, from, next) => {
     if (to.matched.some(record => record.meta.requiresAuth) && !accessToken) {
         next({ name: 'login' });

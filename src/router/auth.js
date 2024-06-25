@@ -1,7 +1,6 @@
 const Auth = {
     isAuthenticated() {
       const accessToken = localStorage.getItem('accessToken');
-      console.log(accessToken)
       if(accessToken){
         return true;
       } else {

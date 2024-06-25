@@ -12,6 +12,7 @@ export default {
   methods: {
     logoutUser(user){
         this.$emit('routeChange');
+        localStorage.clear();
         logout(user);
     },
     refresh(){

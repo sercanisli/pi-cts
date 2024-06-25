@@ -46,6 +46,7 @@ async function logout(user){
         localStorage.removeItem('refreshTokenExpiryTime');
         localStorage.removeItem('userName');
         localStorage.removeItem('userPermissions');
+        localStorage.clear();
         document.cookie = 'accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         document.cookie = 'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         document.cookie = 'refreshTokenExpiryTime=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
@@ -67,16 +68,20 @@ async function refresh(token){
             body: JSON.stringify(token),
         });
         const data = await response.json();
-        localStorage.setItem('accessToken', data.accessToken);
-        document.cookie = `accessToken=${data.accessToken}`;
-        localStorage.setItem('refreshToken', data.refreshToken);
-        document.cookie = `refreshToken=${data.refreshToken}`;
-        localStorage.setItem('refreshTokenExpiryTime', data.refreshTokenExpiryTime);
-        document.cookie =`refreshTokenExpiryTime=${data.refreshTokenExpiryTime}`;
-        localStorage.setItem('userName', data.userName);
-        document.cookie =`userName=${data.userName}`;
-        localStorage.setItem('userPermissions', data.userPermissions);
-        document.cookie=`userPermissions=${data.userPermissions}`;
+        if(data.accessToken !== undefined && data.refreshToken !== undefined && data.refreshTokenExpiryTime !== undefined && data.userName !== undefined && data.userPermissions !== undefined ){
+            localStorage.setItem('accessToken', data.accessToken);
+            document.cookie = `accessToken=${data.accessToken}`;
+            localStorage.setItem('refreshToken', data.refreshToken);
+            document.cookie = `refreshToken=${data.refreshToken}`;
+            localStorage.setItem('refreshTokenExpiryTime', data.refreshTokenExpiryTime);
+            document.cookie =`refreshTokenExpiryTime=${data.refreshTokenExpiryTime}`;
+            localStorage.setItem('userName', data.userName);
+            document.cookie =`userName=${data.userName}`;
+            localStorage.setItem('userPermissions', data.userPermissions);
+            document.cookie=`userPermissions=${data.userPermissions}`;
+        } else {
+            localStorage.clear();
+        }
         return data;
     } catch (error) {
         console.error('Error refresh', error.message);

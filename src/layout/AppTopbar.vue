@@ -159,6 +159,7 @@ const pushToLogin = () => {
     localStorage.removeItem('refreshTokenExpiryTime');
     localStorage.removeItem('userName');
     localStorage.removeItem('userPermissions');
+    localStorage.clear();
     document.cookie = 'accessToken=';
     document.cookie = 'refreshToken=';
     document.cookie = 'refreshTokenExpiryTime=';

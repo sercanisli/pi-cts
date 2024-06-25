@@ -1,7 +1,6 @@
 import router from '@/router'
 
 function redirectTo(status) {
-    console.log(status);
     switch (status) {
         case 401:
             router.push({ name: 'login'});
@@ -26,7 +25,7 @@ async function requestsApi(url, options = {}) {
             credentials:credentials,
             ...options
         }
-        const response = await fetch('/api/'+url, options); 
+        const response = await fetch('http://localhost:5000/api/'+url, options); 
         redirectTo(response.status);
         return response;
 }
