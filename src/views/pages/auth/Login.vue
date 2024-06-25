@@ -41,11 +41,11 @@ export default {
           }
         }
       }
-      this.clear();
+      // this.clear();
     },
-    clear() {
-      (this.username = ""), (this.password = "");
-    },
+    // clear() {
+    //   (this.username = ""), (this.password = "");
+    // },
   },
 };
 </script>

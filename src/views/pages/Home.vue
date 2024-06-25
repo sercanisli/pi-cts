@@ -8,11 +8,26 @@
                     <Button icon="pi pi-search" class="mr-2 button" label="Ara" rounded @click.prevent="handleClick" />
                 </div>
                 <div class="data-table">
-                    <DataTable data-key="id" :value="filteredConnections" stripedRows paginator :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]" tableStyle="min-width: 50rem">
+                    <DataTable 
+                        v-model:expandedRowGroups="expandedRowGroups"
+                        data-key="id" 
+                        :value="filteredConnections" 
+                        stripedRows 
+                        expandableRowGroups
+                        rowGroupMode="subheader"
+                        groupRowsBy="branchId"
+                        paginator 
+                        :rows="10" 
+                        :rowsPerPageOptions="[5, 10, 20, 50]" 
+                        tableStyle="min-width: 50rem"
+                    >
                         <template #header>
                             <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                                 <h5 class="m-0">Bağlantılar</h5>
                             </div>
+                        </template>
+                        <template #groupheader="slotProps">
+                            <span class="vertical-align-middle ml-2 font-bold line-height-3">{{ slotProps.data.branchBranchName }}</span>
                         </template>
                         <Column field="companyId" header="Şirket Adı" style="width: 10%">
                             <template #body="slotProps">
@@ -21,9 +36,9 @@
                                 </span>
                             </template>
                         </Column>
-                        <Column field="branchId" header="Şube Adı" style="width: 10%">
+                        <Column field="branchBranchName" header="Şube Adı" style="width: 10%">
                             <template #body="slotProps">
-                                <span v-if="slotProps.data.branchId">
+                                <span v-if="slotProps.data.branchBranchName">
                                     {{ slotProps.data.branchBranchName }}
                                 </span>
                             </template>
@@ -46,7 +61,7 @@
                                 </div>
                             </template>
                         </Column>
-                        <Column field="branchId" header="Yetkili" style="width: 5%">
+                        <Column field="branchBranchName" header="Yetkili" style="width: 5%">
                             <template #body="slotProps">
                                 <div v-if="slotProps.data.branchPersons && slotProps.data.branchPersons.length > 0">
                                     <Button icon="pi pi-eye" class="mr-2" text rounded @click="authorizedPerson(slotProps.data)" />
@@ -103,6 +118,7 @@ export default {
             visible: '',
             dialogDescription: false,
             dialogAuthorizedPerson: false,
+            expandedRowGroups: null,
             description: '',
             authPerson: []
         };

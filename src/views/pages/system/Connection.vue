@@ -242,11 +242,11 @@ export default {
             this.id = editConnection.id;
 
             const companyName = this.getCompanyName(editConnection.branchId);
-            const branchName = this.getBranchName(editConnection.branchId);
+            // const branchName = this.getBranchName(editConnection.branchId);
             const connectionType = this.getConnectionTypeName(editConnection.connectionTypeId);
 
             this.selectedCompany = this.companies.find((company) => company.companyName === companyName);
-            this.selectedBranch = this.branches.find((branch) => branch.branchName === branchName);
+            this.selectedBranch = this.branches.find((branch) => branch.id === editConnection.branchId);
             this.selectedConnectionType = this.connectionTypes.find((ct) => ct.type === connectionType);
 
             this.link = editConnection.link;

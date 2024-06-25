@@ -228,9 +228,9 @@ export default {
        editPerson(editPerson){
             this.id=editPerson.id;
             const companyName = this.getCompanyName(editPerson.branchId);
-            const branchName = this.getBranchName(editPerson.branchId);
+            // const branchName = this.getBranchId(editPerson.branchId);
             this.selectedCompany = this.companies.find(company=>company.companyName === companyName);
-            this.selectedBranch = this.branches.find(branch => branch.branchName === branchName);
+            this.selectedBranch = this.branches.find(branch => branch.id === editPerson.branchId );
             this.fullName = editPerson.fullName;
             this.phone = editPerson.phone;
             this.getBranchForDropdown();
@@ -314,6 +314,7 @@ export default {
                 '';
        },
        getBranchName(branchId){
+        console.log(branchId);
            const branch = this.getBranch(branchId)
            return branch ?
                branch.branchName :
