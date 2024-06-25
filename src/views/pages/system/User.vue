@@ -162,9 +162,7 @@ export default {
                                 lastName : normalizedLastName,
                                 userName:normalizedUsername,
                                 password:normalizedPassword,
-                                roles:[
-                                    "Bağlantilari Gorme"
-                                ]
+                                roles:[]
                             }
                             const response = await createOneUser(newUser);
                             if(response.ok){

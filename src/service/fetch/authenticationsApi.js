@@ -1,4 +1,5 @@
 import { requestsApi } from './requestsApi'; 
+import router from '../../router';
 
 async function authenticate(user) {
     try {
@@ -79,8 +80,6 @@ async function refresh(token){
             document.cookie =`userName=${data.userName}`;
             localStorage.setItem('userPermissions', data.userPermissions);
             document.cookie=`userPermissions=${data.userPermissions}`;
-        } else {
-            localStorage.clear();
         }
         return data;
     } catch (error) {

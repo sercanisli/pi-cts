@@ -11,19 +11,20 @@ export default {
   },
   methods: {
     logoutUser(user){
+      const router = useRouter();
         this.$emit('routeChange');
-        localStorage.clear();
         logout(user);
     },
     refresh(){
         const accessToken = localStorage.getItem('accessToken');
         const refreshToken = localStorage.getItem('refreshToken');
-        const token ={
+        if(accessToken && refreshToken && accessToken !== undefined && refreshToken !== undefined){
+          const token ={
             accessToken:accessToken,
             refreshToken:refreshToken
+          }
+          refresh(token);
         }
-        
-        refresh(token);
     },
     checkRefreshTokenExpiry() {
       const refreshTokenExpiryTime = localStorage.getItem('refreshTokenExpiryTime');
@@ -31,6 +32,7 @@ export default {
       if (refreshTokenExpiryTime) {
         const expiryDate = new Date(refreshTokenExpiryTime);
         if (expiryDate <= new Date()) {
+          useRouter().push('/auth/login');
           this.logoutUser(user); 
         }
       }

@@ -15,26 +15,30 @@ export default {
   methods: {
     async authentication() {
       this.errors = [];
-      const user = {
-        username: this.username,
-        password: this.password,
-      };
-      try {
-        const data = await authenticate(user);
-        if (data.accessToken) {
-          if (data.isActive === true) {
-            router.push({name : 'home'});
+      if(!this.username.trim() || !this.password.trim()){
+        this.errors.push("Kullanıcı Adı ve Şifre boş geçilemez ")
+      } else {
+          const user = {
+          username: this.username,
+          password: this.password,
+        };
+        try {
+          const data = await authenticate(user);
+          if (data.accessToken && data.accessToken !== undefined) {
+            if (data.isActive === true) {
+              router.push({name : 'home'});
+            } else {
+              this.errors.push("Kullanıcı Aktif Değil. Yöneticinizle iletişime geçin..");
+            }
           } else {
-            this.errors.push("Kullanıcı Aktif Değil. Yöneticinizle iletişime geçin..");
+            this.errors.push("Kullanıcı Adı veya Şifre Hatalı");
           }
-        } else {
-          this.errors.push("Kullanıcı Adı veya Şifre Hatalı");
-        }
-      } catch (error) {
-        if (error.message.includes("Unauthorized")) {
-          console.error("Unauthorized error occurred");
-        } else {
-          console.error("An error occurred during authentication:", error.message);
+        } catch (error) {
+          if (error.message.includes("Unauthorized")) {
+            console.error("Unauthorized error occurred");
+          } else {
+            console.error("An error occurred during authentication:", error.message);
+          }
         }
       }
       this.clear();
