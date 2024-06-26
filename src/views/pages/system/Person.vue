@@ -314,7 +314,6 @@ export default {
                 '';
        },
        getBranchName(branchId){
-        console.log(branchId);
            const branch = this.getBranch(branchId)
            return branch ?
                branch.branchName :

@@ -188,7 +188,8 @@ export default {
             this.id='',
             this.selectedRole='';
             this.userName='',
-            this.fullname='',
+            this.firstName='',
+            this.lastName ='',
             this.password='',
             this.confirmPassword=''
         },

@@ -136,13 +136,15 @@ export default {
                 } else {
                     this.updateCompany(normalizedCompanyName);
                 }
-                this.getAllCompanies();
                 this.clearCompanyDialog();
                 this.cancelClick();
+                this.getAll();
             }
         },
         clearCompanyDialog() {
-            (this.id = ''), (this.companyName = ''), (this.description = '');
+            this.id='';
+            this.companyName='';
+            this.description='';
         },
         editCompany(editCompany) {
             this.id = editCompany.id;
@@ -197,7 +199,6 @@ export default {
     },
     mounted() {
         const toast = useToast();
-
         this.getAll();
         this.getAllBranchMainRoots();
     },

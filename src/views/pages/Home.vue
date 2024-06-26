@@ -120,7 +120,9 @@ export default {
             dialogAuthorizedPerson: false,
             expandedRowGroups: null,
             description: '',
-            authPerson: []
+            authPerson: [],
+            tempSelectedCompany: null,
+            tempSelectedBranch: null
         };
     },
     methods: {
@@ -192,6 +194,7 @@ export default {
         },
         handleClick() {
             if (this.selectedCompany === null) {
+                this.selectedBranch = null;
                 this.$toast.add({
                     severity: 'info',
                     summary: 'Info',
@@ -245,10 +248,10 @@ export default {
                         });
                     }
                 }
+                this.editSearchCount();
+                this.editSearchCountsofCompanies();
             }
-            this.editSearchCount();
-            this.editSearchCountsofCompanies();
-            this.clearDropdowns();
+            // this.clearDropdowns();
         },
         async editSearchCount() {
             const currentDate = new Date();
@@ -271,10 +274,10 @@ export default {
             this.dialogDescription = false;
             this.dialogAuthorizedPerson = false;
         },
-        clearDropdowns() {
-            this.selectedCompany = null;
-            this.selectedBranch = null;
-        },
+        // clearDropdowns() {
+        //     this.selectedCompany = null;
+        //     this.selectedBranch = null;
+        // },
         authorizedPerson(data) {
             const branchId = data.branchId;
             const branchPersons = this.persons.filter((person) => person.branchId === branchId);
@@ -282,6 +285,7 @@ export default {
             this.dialogAuthorizedPerson = true;
         },
         getBranchForDropdown() {
+            this.selectedBranch = null;
             const selectedCompanyId = this.selectedCompany.companyId;
             const filteredBranches = [];
 

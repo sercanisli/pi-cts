@@ -32,7 +32,7 @@
                                 </div>
                             </div>
                             <div>
-                                <Button label="Kaydet" icon="pi pi-check" aria-label="Submit" class="button" @click.prevent="handleClick" />
+                                <Button label="Kaydet" icon="pi pi-check" aria-label="Submit" class="settingButton" @click.prevent="handleClick" />
                             </div>
                             <div class="description">
                                 <p>Kullanıcı Adı değişikliği için yöneticiyle iletişime geçin</p>
@@ -161,7 +161,8 @@ export default {
     margin-bottom: 5px;
 }
 
-.button {
+.settingButton {
+    width: 100px;
     margin-top: 20px;
 }
 

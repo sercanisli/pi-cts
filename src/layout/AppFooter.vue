@@ -12,7 +12,7 @@ const logoUrl = computed(() => {
 
 <template>
     <div class="layout-footer">
-        <img :src="logoUrl" alt="Logo" height="20" class="mr-2" />
+        <img :src="logoUrl" alt="Logo" height="50" class="mr-2" />
         <span class="font-medium ml-2">Pi Otomasyon CTS</span>
     </div>
 </template>
