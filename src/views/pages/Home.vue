@@ -1,11 +1,11 @@
 <template>
     <div class="grid">
         <div class="col-12">
-            <div class="card">
+            <div class="card ">
                 <div class="dropdown-wrapper">
-                    <Dropdown v-model="selectedCompany" :options="companies" optionLabel="companyName" :placeholder="'Şirket Seçiniz'" class="w-full md:w-14rem dropdown" @change="getBranchForDropdown" />
-                    <Dropdown v-model="selectedBranch" :options="filteredBranches" optionLabel="branchName" :placeholder="'Şube Seçiniz'" class="w-full md:w-14rem dropdown" />
-                    <Button icon="pi pi-search" class="mr-2 button" label="Ara" rounded @click.prevent="handleClick" />
+                    <Dropdown v-model="selectedCompany" :options="companies" optionLabel="companyName" :placeholder="'Şirket Seçiniz'" class="dropdownHome  md:w-14rem " @change="getBranchForDropdown" />
+                    <Dropdown v-model="selectedBranch" :options="filteredBranches" optionLabel="branchName" :placeholder="'Şube Seçiniz'" class=" dropdownHome  md:w-14rem" />
+                    <Button icon="pi pi-search" class="mr-2 buttonHome" label="Ara" rounded @click.prevent="handleClick" />
                 </div>
                 <div class="data-table">
                     <DataTable 
@@ -17,7 +17,7 @@
                         rowGroupMode="subheader"
                         groupRowsBy="branchId"
                         paginator 
-                        :rows="10" 
+                        :rows="20" 
                         :rowsPerPageOptions="[5, 10, 20, 50]" 
                         tableStyle="min-width: 50rem"
                     >
@@ -344,16 +344,17 @@ export default {
 
 <style>
 .dropdown-wrapper {
-    justify-content: start;
-    margin: 30px;
+    justify-content: start !important;
+    margin: 30px !important;
 }
 
-.dropdown {
-    margin: 15px;
+.dropdownHome {
+    margin: 15px !important;
 }
 
-.button {
-    margin: 15px;
+.buttonHome {
+    margin: 15px ;
+    width: 75px;
 }
 .data-table {
     margin-top: 25px;

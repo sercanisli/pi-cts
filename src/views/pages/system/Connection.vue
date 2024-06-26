@@ -24,7 +24,7 @@
                     :sortOrder="1"
                     stripedRows
                     paginator
-                    :rows="20"
+                    :rows="50"
                     :rowsPerPageOptions="[5, 10, 20, 50]"
                     tableStyle="min-width: 50rem"
                     v-if="branches.length > 0"
