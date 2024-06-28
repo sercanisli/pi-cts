@@ -11,7 +11,7 @@ const router = createRouter({
             meta: { requiresAuth: true },
             children: [
                 {
-                    path: '/',
+                    path: '/dashboard',
                     name: 'dashboard',
                     component: () => import('@/views/Dashboard.vue'),
                     meta: { requiresAuth: true, permissions: 'Dashboard Gorme' }
@@ -59,7 +59,7 @@ const router = createRouter({
                     meta: { requiresAuth: true, permissions: 'Bağlanti Tipi Gorme' }
                 },
                 {
-                    path: '/home',
+                    path: '/',
                     name: 'home',
                     component: () => import('@/views/pages/Home.vue'),
                     meta: { requiresAuth: true }
@@ -74,7 +74,16 @@ const router = createRouter({
                     name: 'settings',
                     component: () => import('@/views/pages/auth/Settings.vue'),
                     meta: { requiresAuth: true }
-                }
+                },
+                {
+                    path: '/pages/notfound',
+                    name: 'notfound',
+                    component: () => import('@/views/pages/NotFound.vue')
+                },
+                {
+                    path: '/:catchAll(.*)',
+                    redirect: { name: 'notfound' }
+                },
             ]
         },
         {
@@ -87,7 +96,6 @@ const router = createRouter({
             name: 'error',
             component: () => import('@/views/pages/auth/Error.vue')
         },
-        
     ]
 });
 router.beforeEach((to, from, next) => {
