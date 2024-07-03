@@ -3,7 +3,6 @@ import { ref } from 'vue';
 
 import AppMenuItem from './AppMenuItem.vue';
 
-<<<<<<< HEAD
     const model = ref([
         {
             label: 'Dashboard',
@@ -64,68 +63,6 @@ import AppMenuItem from './AppMenuItem.vue';
         }
     ]);
     </script>
-=======
-const model = ref([
-    {
-        label: 'Dashboard',
-        items: [
-            {
-                label: 'Dashboard',
-                icon: 'pi pi-fw pi-home',
-                to: '/dashboard'
-            }
-        ]
-    },
-    {
-        label: 'İşlemler',
-        icon: '',
-        items: [
-            {
-                label: 'Bağlantılar',
-                icon: 'pi pi-link',
-                to: '/'
-            }
-        ]
-    },
-    {
-        label: 'Sistem Tanımlamaları',
-        icon: 'pi pi-fw pi-home',
-        items: [
-            {
-                label: 'Kullanıcı Tanımlamaları',
-                icon: 'pi pi-user-edit',
-                to: '/system/user'
-            },
-            {
-                label: 'Firma Tanımlamaları',
-                icon: 'pi pi-building',
-                to: '/system/company'
-            },
-            {
-                label: 'Şube Tanımlamaları',
-                icon: 'pi pi-sitemap',
-                to: '/system/branch'
-            },
-            {
-                label: 'Yetkili Kişi Tanımlamaları',
-                icon: 'pi pi-users',
-                to: '/system/person'
-            },
-            {
-                label: 'Bağlantı Tanımlamaları',
-                icon: 'pi pi-link',
-                to: '/system/connection'
-            },
-            {
-                label: 'Bağlantı Tipi Tanımlamaları',
-                icon: 'pi pi-desktop',
-                to: '/system/connection-type'
-            }
-        ]
-    }
-]);
-</script>
->>>>>>> origin/main
 
     <template>
     <ul class="layout-menu">
