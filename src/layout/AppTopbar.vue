@@ -236,7 +236,7 @@ const getUsernameFromUserInfo = (userInfo) => {
 <template>
     <div class="layout-topbar">
         <router-link to="/" class="layout-topbar-logo">
-            <img :src="logoUrl" alt="logo" />
+            <img style="height:50px" :src="logoUrl" alt="logo" />
         </router-link>
 
         <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">

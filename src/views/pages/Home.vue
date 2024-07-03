@@ -63,7 +63,7 @@
                         </Column>
                         <Column field="branchBranchName" header="Yetkili" style="width: 5%">
                             <template #body="slotProps">
-                                <div v-if="slotProps.data.branchPersons && slotProps.data.branchPersons.length > 0">
+                                <div v-if="slotProps.data.branchPersons && slotProps.data.branchPersons.length > 0 ">
                                     <Button icon="pi pi-eye" class="mr-2" text rounded @click="authorizedPerson(slotProps.data)" />
                                 </div>
                                 <div v-else class="button-eye">

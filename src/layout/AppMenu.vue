@@ -5,8 +5,8 @@
 
     const model = ref([
         {
-            label: 'Home',
-            items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' }]
+            label: 'Dashboard',
+            items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/dashboard' }]
         },
         {
             label:'İşlemler',
@@ -15,7 +15,7 @@
                 {
                     label:'Bağlantılar',
                     icon:'pi pi-link',
-                    to:'/home'
+                    to:'/'
                 }
             ]
         },
@@ -52,6 +52,11 @@
                     label: 'Bağlantı Tipi Tanımlamaları', 
                     icon: 'pi pi-desktop', 
                     to: '/system/connection-type'
+                },
+                {
+                    label: 'Proje Tanımlamaları', 
+                    icon: 'pi pi-directions', 
+                    to: '/system/project'
                 },
 
             ]
