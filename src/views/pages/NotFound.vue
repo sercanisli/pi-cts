@@ -17,3 +17,7 @@ import AppConfig from '@/layout/AppConfig.vue';
     <AppConfig simple />
 </template>
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/main

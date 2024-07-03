@@ -76,6 +76,7 @@ const router = createRouter({
                     meta: { requiresAuth: true }
                 },
                 {
+<<<<<<< HEAD
                     path: '/system/project',
                     name: 'project',
                     component: () => import('@/views/pages/system/Project.vue'),
@@ -88,6 +89,8 @@ const router = createRouter({
                     meta: { requiresAuth: true }
                 },
                 {
+=======
+>>>>>>> origin/main
                     path: '/pages/notfound',
                     name: 'notfound',
                     component: () => import('@/views/pages/NotFound.vue')
@@ -95,7 +98,11 @@ const router = createRouter({
                 {
                     path: '/:catchAll(.*)',
                     redirect: { name: 'notfound' }
+<<<<<<< HEAD
                 }
+=======
+                },
+>>>>>>> origin/main
             ]
         },
         {
@@ -108,7 +115,6 @@ const router = createRouter({
             name: 'error',
             component: () => import('@/views/pages/auth/Error.vue')
         },
-        
     ]
 });
 router.beforeEach((to, from, next) => {
