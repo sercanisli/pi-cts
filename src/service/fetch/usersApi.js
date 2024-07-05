@@ -10,6 +10,16 @@ async function getAllUsers(){
     }
 }
 
+async function getAllLimitedUsers(){
+    try {
+        const response = await requestsApi('users/GetAllLimitedUsersAsync');
+        return response.json();
+    } catch (error) {
+        console.error('Error fetching users', error.message);
+        throw error;
+    }
+}
+
 async function getOneUserById(id){
     try {
         const response = await requestsApi(`users/${id}`);
@@ -125,4 +135,4 @@ async function deleteUser(id){
     }
 }
 
-export {getAllUsers, getOneUserById, getOneUserByIdForSettings, getOneUserByUserName, getOneUserByNameForSettings, createOneUser, updateUser, updateUserForSettings, updateUserStatus, deleteUser}
+export {getAllUsers, getAllLimitedUsers, getOneUserById, getOneUserByIdForSettings, getOneUserByUserName, getOneUserByNameForSettings, createOneUser, updateUser, updateUserForSettings, updateUserStatus, deleteUser}

@@ -54,7 +54,6 @@ export default {
                     this.$emit('task-progress-updated', { task, progress });
                 },
 
-                //I doubt you will ever need this as the developer already knows what view mode they set.
                 on_view_change: (mode) => {
                     this.$emit('view-mode-updated', mode);
                 }

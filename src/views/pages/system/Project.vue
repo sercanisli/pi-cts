@@ -43,8 +43,8 @@
                         <div class="projectDialog-group">
                             <InputText id="projectName" v-model="projectName" placeholder="Proje Adı" class="input" />
                             <Dropdown v-model="selectedCompany" :options="companies" optionLabel="companyName" :placeholder="'Şirket Seçiniz'" class="w-full md:w-14rem dropdown" @change="getBranchForDropdown" />
-                            <Calendar placeholder="Başlanma Tarihi" v-model="selectedStartDate" showIcon iconDisplay="input" inputId="icondisplay" class="calendar"/>
-                            <Calendar placeholder="Bitiş Tarihi" v-model="selectedEndDate" showIcon iconDisplay="input" inputId="icondisplay" class="calendar"/>
+                            <!-- <Calendar placeholder="Başlanma Tarihi" v-model="selectedStartDate" showIcon iconDisplay="input" inputId="icondisplay" class="calendar"/>
+                            <Calendar placeholder="Bitiş Tarihi" v-model="selectedEndDate" showIcon iconDisplay="input" inputId="icondisplay" class="calendar"/> -->
                             <Textarea id="description" v-model="description" placeholder="Açıklama" :autoResize="true" rows="7" cols="30" class="textarea" />
                             <div class="error-message">
                                 <div v-for="(error, index) in errors" :key="index">
@@ -153,8 +153,8 @@ export default {
                     const newProject = {
                         projectName: normalizedProjectName,
                         companyId:this.selectedCompany.id,
-                        startDate: this.selectedStartDate.toLocaleDateString('en-US'),
-                        endDate: this.selectedEndDate.toLocaleDateString('en-US'),
+                        // startDate: this.selectedStartDate.toLocaleDateString('en-US'),
+                        // endDate: this.selectedEndDate.toLocaleDateString('en-US'),
                         description: this.description,
                         statuses: 0
                     };

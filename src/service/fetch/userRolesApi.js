@@ -23,5 +23,4 @@ async function updateUserRole(newUserRoles){
     }
 }
 
-
 export { getAllUserRoles, updateUserRole }
