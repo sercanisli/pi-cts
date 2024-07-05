@@ -10,6 +10,16 @@ async function getAllTasks(){
     }
 }
 
+async function getAllTasksByProjectId(id){
+    try {
+        const response = await requestsApi(`tasks/GetAllTasksByProjectIdAsync/${id}`);
+        return response.json();
+    } catch (error) {
+        console.error('Error fetching tasks:', error.message);
+        throw error;
+    }
+}
+
 async function getOneTask(id){
     try {
         const response = await requestsApi(`tasks/${id}`);
@@ -58,4 +68,4 @@ async function deleteTask(id){
     }
 }
 
-export { getAllTasks, getOneTask, createTask, updateTask, deleteTask}
+export { getAllTasks, getAllTasksByProjectId, getOneTask, createTask, updateTask, deleteTask}

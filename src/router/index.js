@@ -82,7 +82,7 @@ const router = createRouter({
                     meta: { requiresAuth: true }
                 },
                 {
-                    path: '/system/project/tasks',
+                    path: '/system/project/tasks/:projectId',
                     name: 'tasks',
                     component: () => import('@/views/pages/system/Gantt.vue'),
                     meta: { requiresAuth: true }

@@ -30,8 +30,8 @@
                                 <p>Bitiş Tarihi : {{ getDate(item.endDate) }}</p>
                                 <p style="text-decoration: underline; cursor: pointer" class="text-blue-500" @click="goToTask(item.id)">Proje görevleri <i class="pi pi-arrow-right ml-2"></i></p>
                                 <div class="flex gap-4 mt-1">
-                                    <Button icon="pi pi-pencil" severity="success" class="w-full" />
-                                    <Button icon="pi pi-trash" severity="danger" class="w-full" />
+                                    <Button icon="pi pi-pencil" severity="success" class="w-full" @click="editProject(item)" />
+                                    <Button icon="pi pi-trash" severity="danger" class="w-full" @click="confirmDeleteProject(item)"/>
                                 </div>
                             </div>
                         </div>
@@ -57,6 +57,18 @@
                             </div>
                         </div>
                     </Dialog>
+                    <Dialog v-model:visible="deleteProjectDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
+                    <div class="flex align-items-center justify-content-center">
+                        <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+                        <span v-if="projectName && selectedCompany "
+                            >Are you sure you want to delete <b>{{ selectedCompany }} - {{ projectName }}</b> ?</span
+                        >
+                    </div>
+                    <template #footer>
+                        <Button label="No" icon="pi pi-times" text @click="deleteProjectDialog = false" />
+                        <Button label="Yes" icon="pi pi-check" text @click="deleteProject" />
+                    </template>
+                </Dialog>
                 </div>
             </div>
         </div>
@@ -64,7 +76,7 @@
 </template>
 
 <script>
-import { getAllProjects, updateProject, createProject } from '../../../service/fetch/projectsApi';
+import { getAllProjects, updateProject, createProject, deleteProject } from '../../../service/fetch/projectsApi';
 import { getAllLimitedCompanies } from '../../../service/fetch/comapniesApi';
 export default {
     data() {
@@ -75,7 +87,7 @@ export default {
             currentPage: 0,
             itemsPerPage: 8,
             id: null,
-            projectName: null,
+            projectName: '',
             projectStartDate: null,
             selectedStartDate:null,
             projectEndDate: null,
@@ -85,15 +97,17 @@ export default {
             companies: [],
             selectedCompany: null,
             errors: [],
-            status: null
+            status: null,
+            deleteProjectDialog: false,
+            selectedConnectionForDelete:false
         };
     },
     methods: {
         async getPorjets() {
-            getAllProjects();
             try {
                 const data = await getAllProjects();
                 this.projects = data;
+                console.log(this.projects)
             } catch (error) {
                 console.error('Error fetching projects:', error);
             }
@@ -128,16 +142,16 @@ export default {
         async saveClick() {
             this.errors = [];
             const normalizedProjectName = this.projectName.replace(/\s+/g, ' ').trim();
-            if (!normalizedProjectName) {
+            if (!this.projectName.trim()) {
                 this.errors.push('Proje adı boş geçilemez..');
             } else if (!this.selectedCompany) {
                 this.errors.push('Lütfen bir şirket seçiniz..');
             } else if(this.selectedEndDate<this.selectedStartDate) {
-                this.errors.push('Proje bitiş tarihi, başlama tarihinden küçük olamaz.')
+                this.errors.push('Proje bitiş tarihi, başlama tarihinden küçük olamaz.');
             } else {
                 if (!this.id) {
                     const newProject = {
-                        projectName: this.projectName,
+                        projectName: normalizedProjectName,
                         companyId:this.selectedCompany.id,
                         startDate: this.selectedStartDate.toLocaleDateString('en-US'),
                         endDate: this.selectedEndDate.toLocaleDateString('en-US'),
@@ -153,22 +167,84 @@ export default {
                         life: 3000
                     });
                 } else {
-                    //update
+                    this.updateProject(normalizedProjectName);
                 }
                 this.clearProjectDialog();
-                this.getPorjets();
+                this.getPorjets().then(() => {
+                    this.updateDisplayedCards();
+                });
+                this.getCompanies();
                 this.cancelClick();
             }
         },
         clearProjectDialog() {
             this.id = null;
-            this.projectName = null;
+            this.projectName = '';
             this.selectedCompany = null;
             this.description = null;
         },
         goToTask(id) {
-            console.log(id)
-             this.$router.push({name : 'tasks'})
+            this.$router.push({name : 'tasks', params: { projectId: id } });
+        },
+        editProject(editProject){
+            console.log(editProject);
+            this.id = editProject.id;
+            this.projectName = editProject.projectName;
+            this.selectedCompany = this.companies.find((company) => company.id === editProject.companyId);
+            this.description = editProject.description;
+
+            this.projectDiaglog = true;
+        },
+        async updateProject(normalizedProjectName){
+            const companyId = this.selectedCompany.id;
+            try {
+                const updatedProject = {
+                    id:this.id,
+                    companyId: this.selectedCompany.id,
+                    projectName:normalizedProjectName,
+                    description:this.description
+                }
+                const response = await updateProject(this.id, updatedProject);
+                if(response === 204){
+                    this.$toast.add({severity: 'success', summary: 'Successful', detail: 'Project Updated', life: 3000});
+                    this.getPorjets().then(() => {
+                        this.updateDisplayedCards();
+                    });
+                    this.getCompanies;
+                } else {
+                    this.$toast.add({severity: 'error', summary: 'Error', detail: 'Project not Updated', life: 3000});
+                }
+                this.clearProjectDialog();
+                this.cancelClick();
+            } catch (error) {
+                console.error('Error updating project:', error);
+                this.$toast.add({severity: 'error', summary: 'Error', detail: 'Failed to update project', life: 3000});
+            }
+        },
+        confirmDeleteProject(deleteProject){
+            this.projectName = deleteProject.projectName;
+            this.selectedCompany = deleteProject.companyCompanyName;
+            this.selectedConnectionForDelete = deleteProject;
+            this.deleteProjectDialog = true;
+        },
+        async deleteProject(){
+            const deletedProjectId = this.selectedConnectionForDelete.id;
+            try {
+                const response = await deleteProject(deletedProjectId);
+                if(response === 204){
+                    this.$toast.add({severity: 'success', summary:'Successful', detail:'Project Deleted', life:3000});
+                    this.getPorjets().then(() => {
+                        this.updateDisplayedCards();
+                    });
+                    this.getCompanies;
+                } else {
+                    this.$toast.add({severity: 'error', summary:'Eroor', detail:'Project not Deleted', life:3000});
+                }
+            } catch (error) {
+                console.error('Error deleting project', error);
+                this.$toast.add({severity: 'error', summary: 'Error', detail: 'Failed to delete project', life: 3000});
+            }
+            this.deleteProjectDialog = false;
         },
         getDate(date){
             const newDate = new Date(date);

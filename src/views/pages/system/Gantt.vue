@@ -1,106 +1,190 @@
-<template>          
-  <div>
-    <h1>Gantt Grafiği</h1>
-    <gantt-chart :tasks="tasks" :arrows="arrows"></gantt-chart>
-  </div>
+<template>
+    <div class="grid">
+        <div class="col-12">
+            <div class="card">
+                <Toolbar class="mb-4">
+                    <template v-slot:start>
+                        <div class="my-2">
+                            <Button label="Yeni Görev" icon="pi pi-plus" class="mr-2" @click="openNew" />
+                        </div>
+                    </template>
+                </Toolbar>
+                <div id="app">
+                    <h1>Başlık</h1> 
+                    <Button label="Günlük" severity="secondary" @click="demoViewMode('day')" text/>
+                    <Button label="Haftalık" severity="secondary" @click="demoViewMode('week')" text/>
+                    <Button label="Aylık" severity="secondary" @click="demoViewMode('month')" text/>
+                    <frappe-gantt :view-mode="mode" :tasks="tasks" @task-updated="debugEventLog.push($event)" @task-date-updated="debugEventLog.push($event)" @task-progress-change="debugEventLog.push($event)" />
+                </div>
+                <Dialog v-model:visible="taskDialog" :style="{ width: '400px' }" header="Yeni Proje" :modal="true" class="p-fluid">
+                    <InputText id="name" v-model="name" placeholder="Task Adı" class="input" />
+                    <MultiSelect v-model="selectedResponsible" :options="users" optionLabel="username" filter placeholder="Sorumlu Kişi" :maxSelectedLabels="3" class="w-full md:w-80 multiSelect" />
+                    <Calendar placeholder="Başlanma Tarihi" v-model="selectedStartDate" showIcon iconDisplay="input" inputId="icondisplay" class="calendar" />
+                    <Calendar placeholder="Bitiş Tarihi" v-model="selectedEndDate" showIcon iconDisplay="input" inputId="icondisplay" class="calendar" />
+                    <MultiSelect v-model="selectedDependencies" :options="tasks.name" optionLabel="name" filter placeholder="Sorumlu Taskler" :maxSelectedLabels="3" class="w-full md:w-80 multiSelect" />
+                    <Textarea id="description" v-model="description" placeholder="Açıklama" :autoResize="true" rows="7" cols="30" class="textarea" />
+                    <div class="error-message">
+                        <div v-for="(error, index) in errors" :key="index">
+                            {{ error }}
+                        </div>
+                    </div>
+                    <div class="button-group">
+                        <Button label="Cancel" icon="pi pi-times" text="" class="button" @click.prevent="cancelClick" />
+                        <Button label="Save" icon="pi pi-check" text="" class="button" @click.prevent="saveClick" />
+                    </div>
+                </Dialog>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
-import GanttChart from '../../../components/GanttChart.vue';
+import FrappeGantt from '../../../components/GanttChart.vue';
+import { getAllTasksByProjectId } from '../../../service/fetch/tasksApi';
 
 export default {
-  name: 'App',
-  components: {
-    GanttChart,
-  },
-  data() {
-    return {
-      tasks: [
-        {
-          id: 'Task 1',
-          name: 'Task 1',
-          start: '2024-06-25',
-          end: '2024-07-05',
-          progress: 50,
+    name: 'App',
+    components: {
+        FrappeGantt
+    },
+    data() {
+        return {
+            mode: 'day',
+            id:null,
+            projectId:null,
+            taskDialog: false,
+            name:'',
+            selectedResponsible: [],
+            selectedStartDate: null,
+            selectedEndDate: null,
+            selectedDependencies:[],
+            description: '',
+            errors:[],
+            tasks: [{}],
+            debugEventLog: []
+        };
+    },
+    methods: {
+        async getTasks(projectId){
+          try {
+            const data = await getAllTasksByProjectId(projectId);
+            this.tasks = data;
+
+            console.log(this.tasks);
+          } catch (error) {
+            console.error('Error fetching tasks', error)
+          }
         },
-        {
-          id: 'Task 2',
-          name: 'Task 2',
-          start: '2024-07-01',
-          end: '2024-07-10',
-          progress: 30,
-          dependencies:[
-            'Task 1'
-          ]
+        demoViewMode(viewMode) {
+            this.mode = viewMode;
         },
-        {
-          id: 'Task 3',
-          name: 'Task 3',
-          start: '2024-07-05',
-          end: '2024-07-10',
-          progress: 30,
-          dependencies:[
-            'Task 1',
-            'Task 2'
-          ]
+        openNew() {
+            this.clearTaskDialog();
+            this.errors = [];
+            this.taskDialog = true;
         },
-        {
-          id: 'Task 4',
-          name: 'Task 4',
-          start: '2024-07-01',
-          end: '2024-07-10',
-          progress: 30,
-          dependencies:[
-            'Task 1'
-          ]
+        async saveClick() {
+          this.errors = [];
+          const normalizedName = this.name.replace(/\s+/g, ' ').trim();
+          if(!this.name.trim()){
+            this.errors.push('Task adı boş geçilemez..');
+          } else if (!this.selectedStartDate) {
+            this.errors.push('Başlama Tarihi boş geçilemez..');
+          } else if (!this.selectedEndDate){
+            this.errors.push('Bitiş Tarihi boş geçilemez..');
+          } else if (this.selectedEndDate<this.selectedStartDate) {
+            this.errors.push('Task bitiş tarihi, başlama tarihinden küçük olamaz');
+          } else {
+            if(!this.id){
+              const newTask = {
+                //props
+              }
+              //api isteği
+              this.tasks.push(newTask);
+              this.$toast.add({
+                severity: 'success',
+                summary: 'Successful',
+                detail: 'Task Added',
+                life: 3000
+                });
+            } else {
+              //update
+            }
+            this.clearTaskDialog();
+            //getAllTasks
+            this.cancelClick();
+          }
         },
-        {
-          id: 'Task 5',
-          name: 'Task 5',
-          start: '2024-07-11',
-          end: '2024-07-15',
-          progress: 30,
-          dependencies:[
-            'Task 4'
-          ]
+        cancelClick() {
+            this.taskDialog = false;
         },
-        {
-          id: 'Task 6',
-          name: 'Task 6',
-          start: '2024-07-11',
-          end: '2024-07-15',
-          progress: 30,
-          dependencies:[
-            'Task 2',
-            'Task 3',
-            'Task 4'
-          ]
-        },
-        {
-          id: 'Task 7',
-          name: 'Task 7',
-          start: '2024-07-11',
-          end: '2024-07-15',
-          progress: 30,
-          dependencies:[
-            'Task 1'
-          ]
-        },
-      ],
-      arrows: [
-        {
-          id: 'arrow1',
-          source: 'Task 1',
-          target: 'Task 2',
-        },
-      ],
-      id:null
-    };
-  },
-  created(){
-  }
+        clearTaskDialog(){
+          this.id=null;
+          this.projectId=null;
+          this.name='';
+          this.selectedResponsible=[];
+          this.selectedStartDate=null;
+          this.selectedEndDate=null;
+          this.selectedDependencies=[];
+          this.description="";
+        } 
+    },
+    async created(){
+        this.projectId = this.$route.params.projectId;
+        console.log(this.$route.params.id);
+        await this.getTasks(this.projectId);
+    }
 };
 </script>
 
-<style>
+<style lang="scss">
+#app {
+    font-family: 'Avenir', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    //   text-align: center;
+    color: #2c3e50;
+}
+.dropdown {
+    width: 100% !important;
+    margin-top: 30px;
+}
+
+.multiSelect {
+    width: 100% !important;
+    margin-top: 30px;
+}
+
+.input {
+    margin-top: 30px;
+}
+
+.calendar{
+    margin-top: 30px;
+}
+
+.textarea {
+    margin-top: 30px;
+}
+
+.error-message {
+    margin-top: 10px;
+    align-content: center;
+    justify-content: center;
+    text-align: center;
+    color: #ff6347;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+}
+
+.button {
+    width: 30%;
+}
 </style>
