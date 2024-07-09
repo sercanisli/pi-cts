@@ -47,23 +47,26 @@
                                 tableStyle="w-full"
                                 class="dataTable"
                             >
-                                <Column>
+                                <Column style="widht: 14%">
                                     <template #body="slotProps">
                                         <Button label="" icon="pi pi-pencil" severity="success" class="ml-1 mr-1" @click="editTask(slotProps.data)" />
-                                        <Button icon="pi pi-trash" severity="warning" class="mr-2" @click="deleteTask(slotProps.data)" />
+                                        <Button icon="pi pi-trash" severity="warning" class="ml-1 mr-1" @click="deleteTask(slotProps.data)" />
                                     </template>
                                 </Column>
-                                <Column field="name"  header="Görev" style="widht: 45%"></Column>
-                                <Column field="userFirstName" header="Sorumlu" style="width: 45%">
-                                <template #body="slotProps">
-                                    <span v-if="slotProps.data.id">
-                                        {{ getUserForTask(slotProps.data.id)}}
-                                    </span>
-                                </template>
+                                <Column field="name"  header="Görev" style="widht: 43%">
+                                    <template #body="slotProps">
+                                        <span v-if="slotProps.data.name" v-tooltip.top="slotProps.data.name"> {{slotProps.data.name.slice(0,10)}} {{slotProps.data.name.length>10 ? '..' : '' }} </span>
+                                    </template>
+                                </Column>
+                                <Column field="users" header="Sorumlu" style="width: 43%">
+                                    <template #body="slotProps">
+                                        <span v-if="slotProps.data.users.length > 0" v-tooltip.top="slotProps.data.users.join(', ')">
+                                            {{ getUserNames(slotProps.data) }}
+                                        </span>
+                                    </template>
                                 </Column>
                             </DataTable>
                         </div>
-                        
                         <div class="col-9">
                             <Button label="Günlük" severity="secondary" @click="demoViewMode('day')" text />
                             <Button label="Haftalık" severity="secondary" @click="demoViewMode('week')" text />
@@ -123,13 +126,27 @@ export default {
             tasks: [{}],
             debugEventLog: [],
             ids: [],
+            users:[],
+            userNames:[]
         };
     },
     methods: {
-        async getTasks(projectId) {
+        async getTasks(taskId) {
+        this.projectId = this.$route.params.projectId;
             try {
-                const data = await getAllTasksByProjectId(projectId);
-                this.tasks = data;
+                const data = await getAllTasksByProjectId(taskId);
+                if(data.length === 0){
+                    this.tasks = [{
+                        id:null,
+                        name:null,
+                        start:null,
+                        end:null
+                    }];
+                } else {
+                    this.tasks = data;
+                    console.log(this.tasks)
+                }
+
             } catch (error) {
                 console.error('Error fetching tasks', error);
             }
@@ -142,8 +159,8 @@ export default {
                 console.error('Error fetching users', error);
             }
         },
-        async getTaskUsers(taskId) {
-           await getAllTaskUsers(taskId)
+        getTaskUsers(taskId) {
+            getAllTaskUsers(taskId)
             .then(data => {
                 this.responsible = data;
                 console.log(this.responsible);
@@ -175,6 +192,9 @@ export default {
                 this.errors.push('Task bitiş tarihi, başlama tarihinden küçük olamaz');
             } else {
                 if (!this.id) {
+                    this.selectedResponsible.forEach(sR => {
+                        this.userNames.push(sR.userName);
+                    });
                     const responsibleIds = this.getIds(this.selectedResponsible);
                     const dependenciesIds = this.getIds(this.selectedDependencies);
                     const newTask = {
@@ -183,8 +203,10 @@ export default {
                         start: this.selectedStartDate,
                         end: this.selectedEndDate,
                         description: this.description,
-                        dependencies: dependenciesIds
+                        dependencies: dependenciesIds,
+                        users:this.userNames
                     };
+                    console.log(newTask)
                     this.tasks.push(newTask);
                     this.$toast.add({
                         severity: 'success',
@@ -248,15 +270,21 @@ export default {
             });
             return this.ids;
         },
-        getUserForTask(id) {
-            for (let i = 0; i < this.responsible.length; i++) {
-                if (this.responsible[i].id === id) {
-                    console.log(this.responsible[i].userFirstName);
-                    return this.responsible[i].userFirstName;
+        getUserNames(data) {
+            const responsibleUsers = data.users;
+            if (responsibleUsers && responsibleUsers.length > 0) {
+                const totalLength = responsibleUsers.join(', ').length;
+                
+                if (totalLength > 10) {
+                    return responsibleUsers.join(', ').slice(0, 10) + '..';
+                } else {
+                    return responsibleUsers.join(', ');
                 }
+            } else {
+                return '';
             }
-            return '';
         },
+
         editTask() {
 
         },
@@ -266,7 +294,6 @@ export default {
         this.projectId = this.$route.params.projectId;
         await this.getTasks(this.projectId);
         await this.getLimitedUsers();
-        await this.getTaskUsers(this.projectId);
     }
 };
 </script>
