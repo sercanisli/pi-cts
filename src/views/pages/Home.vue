@@ -150,6 +150,7 @@ export default {
                             isUniqueBranches = false;
                         }
                     });
+                    
                     if (isUniqueBranches) {
                         const branch = {
                             branchId: detail.branchId,

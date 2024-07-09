@@ -1,6 +1,6 @@
 import { requestsApi } from './requestsApi'; 
 
-async function getAllTaskUsers(id){
+async function getAllTaskUsers(id) {
     try {
         const response = await requestsApi(`taskusers/${id}`);
         return response.json();
@@ -8,11 +8,11 @@ async function getAllTaskUsers(id){
         console.error('Error fetching task users:', error.message);
         throw error;
     }
-}
+}   
 
-async function updateTaskUsers(newTaskUser){
+async function updateTaskUsers(id, newTaskUser){
     try {
-        const response = await requestsApi('taskusers', {
+        const response = await requestsApi(`taskusers/${id}`, {
             method:'PUT',
             body:JSON.stringify(newTaskUser),
         });

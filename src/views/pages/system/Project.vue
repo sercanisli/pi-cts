@@ -107,7 +107,6 @@ export default {
             try {
                 const data = await getAllProjects();
                 this.projects = data;
-                console.log(this.projects)
             } catch (error) {
                 console.error('Error fetching projects:', error);
             }
@@ -187,7 +186,6 @@ export default {
             this.$router.push({name : 'tasks', params: { projectId: id } });
         },
         editProject(editProject){
-            console.log(editProject);
             this.id = editProject.id;
             this.projectName = editProject.projectName;
             this.selectedCompany = this.companies.find((company) => company.id === editProject.companyId);
