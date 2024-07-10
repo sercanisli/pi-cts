@@ -13,33 +13,6 @@
                     <h2>Başlık</h2>
                     <div class="ganttGroup">
                         <div class="col-3">
-                            <!-- <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Görev Adı</th>
-                                        <th>Sorumlu</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="(item, index) in tasks" :key="index" :class="index % 2 === 0 ? 'even' : 'odd'">
-                                        <td>
-                                            <div class="itemButtonGroup" style="align-items: center">
-                                                <Button label="" icon="pi pi-pencil" severity="success" class="ml-1 mr-1" @click="editTask(item)" />
-                                                <Button icon="pi pi-trash" severity="warning" class="mr-2" @click="deleteTask(item)" />
-                                                {{ item.name }}
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div v-if="loading">
-                                                Loading...
-                                            </div>
-                                            <div v-else>
-                                                {{ getUserForTask(item) }}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table> -->
                             <DataTable
                                 data-key="id"
                                 :value="tasks"
@@ -49,8 +22,8 @@
                             >
                                 <Column style="widht: 14%">
                                     <template #body="slotProps">
-                                        <Button label="" icon="pi pi-pencil" severity="success" class="ml-1 mr-1" @click="editTask(slotProps.data)" />
-                                        <Button icon="pi pi-trash" severity="warning" class="ml-1 mr-1" @click="deleteTask(slotProps.data)" />
+                                        <Button icon="pi pi-pencil" severity="success" class="ml-1 mr-1" @click="editTask(slotProps.data)" />
+                                        <Button icon="pi pi-trash" severity="warning" class="ml-1 mr-1" @click="confirmDeleteTask(slotProps.data)" />
                                     </template>
                                 </Column>
                                 <Column field="name"  header="Görev" style="widht: 43%">
@@ -92,6 +65,18 @@
                         <Button label="Save" icon="pi pi-check" text="" class="button" @click.prevent="saveClick" />
                     </div>
                 </Dialog>
+                <Dialog v-model:visible="deleteTaskDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
+                    <div class="flex align-items-center justify-content-center">
+                        <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+                        <span v-if="selectedTask"
+                            >Are you sure you want to delete <b> {{ selectedTask.name }} </b> ?</span
+                        >
+                    </div>
+                    <template #footer>
+                        <Button label="No" icon="pi pi-times" text @click="deleteTaskDialog = false" />
+                        <Button label="Yes" icon="pi pi-check" text @click="deleteTask" />
+                    </template>
+                </Dialog>
             </div>
         </div>
     </div>
@@ -99,7 +84,7 @@
 
 <script>
 import FrappeGantt from '../../../components/GanttChart.vue';
-import { getAllTasksByProjectId, createTask } from '../../../service/fetch/tasksApi';
+import { getAllTasksByProjectId, createTask, deleteTask } from '../../../service/fetch/tasksApi';
 import { getAllLimitedUsers } from '../../../service/fetch/usersApi';
 import { getAllTaskUsers, updateTaskUsers } from '../../../service/fetch/taskUsersApi';
 
@@ -121,14 +106,22 @@ export default {
             selectedStartDate: null,
             selectedEndDate: null,
             selectedDependencies: [],
+            dependencies:[],
             description: '',
             errors: [],
             tasks: [{}],
             debugEventLog: [],
             ids: [],
             users:[],
-            userNames:[]
+            userNames:[],
+            selectedTask:null,
+            deleteTaskDialog:false
         };
+    },
+    created() {
+        this.projectId = this.$route.params.projectId;
+        this.getTasks(this.projectId);
+        this.getLimitedUsers();
     },
     methods: {
         async getTasks(taskId) {
@@ -144,7 +137,9 @@ export default {
                     }];
                 } else {
                     this.tasks = data;
-                    console.log(this.tasks)
+                    this.tasks.forEach(task => {
+                        this.dependencies.push(task.dependencies);
+                    });
                 }
 
             } catch (error) {
@@ -163,7 +158,6 @@ export default {
             getAllTaskUsers(taskId)
             .then(data => {
                 this.responsible = data;
-                console.log(this.responsible);
             })
             .catch(error => {
                 console.error('Error fetching task users:',error);
@@ -195,6 +189,8 @@ export default {
                     this.selectedResponsible.forEach(sR => {
                         this.userNames.push(sR.userName);
                     });
+                    console.log(this.selectedDependencies);
+                    console.log(this.selectedResponsible);
                     const responsibleIds = this.getIds(this.selectedResponsible);
                     const dependenciesIds = this.getIds(this.selectedDependencies);
                     const newTask = {
@@ -206,7 +202,6 @@ export default {
                         dependencies: dependenciesIds,
                         users:this.userNames
                     };
-                    console.log(newTask)
                     this.tasks.push(newTask);
                     this.$toast.add({
                         severity: 'success',
@@ -285,16 +280,65 @@ export default {
             }
         },
 
-        editTask() {
+        editTask(updateTask) {
 
+            this.clearTaskDialog();
+
+            this.id = updateTask.id;
+            this.projectId = updateTask.projectId;
+            this.name = updateTask.name;
+            this.selectedStartDate = updateTask.start;
+            this.selectedEndDate = updateTask.end;
+            this.description = updateTask.description;
+
+            console.log(this.dependencies)
+
+            console.log('updateTask.dependencies:', updateTask.dependencies);
+            console.log('this.dependencies:', this.dependencies);
+
+            updateTask.dependencies.forEach(dep => {
+                const foundDependency = this.dependencies.find(d => d === dep);
+                if (foundDependency) {
+                    this.selectedDependencies.push(dep);
+                }
+            });
+
+            console.log('this.selectedDependencies:', this.selectedDependencies);
+
+            this.taskDialog = true;
         },
-        deleteTask() {}
+        // getDependenciesTaskName(taskId){
+        //     const task = this.tasks.find((task) => task.id === taskId);
+        //     return task ?
+        //     task.name : '';
+        // },
+        confirmDeleteTask(deleteTask){
+            const taskName = deleteTask.name;
+            this.selectedTask = deleteTask;
+            this.deleteTaskDialog = true;
+        },
+        async deleteTask(){
+            const deletedTaskId = this.selectedTask.id;
+            this.projectId = this.$route.params.projectId;
+            try {
+                const response = await deleteTask(deletedTaskId,this.projectId);
+                if(response === 204){
+                    this.$toast.add({severity: 'success', summary:'Successful', detail:'Task Deleted', life:3000});
+                    this.getTasks(this.projectId);
+                    this.getLimitedUsers();
+                } else {
+                    this.$toast.add({severity: 'error', summary:'Eroor', detail:'Task not Deleted', life:3000});
+                }
+                this.deleteTaskDialog = false;
+                this.selectedTask = null;
+            } catch (error) {
+                console.error('Error deleting task:', error);
+                this.$toast.add({severity: 'error', summary: 'Error', detail: 'Failed to delete task', life: 3000});
+            }
+            this.deleteTaskDialog = false;
+        }
     },
-    async created() {
-        this.projectId = this.$route.params.projectId;
-        await this.getTasks(this.projectId);
-        await this.getLimitedUsers();
-    }
+    
 };
 </script>
 

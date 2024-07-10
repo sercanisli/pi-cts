@@ -56,10 +56,11 @@ async function updateTask(id, taskData){
     }
 }
 
-async function deleteTask(id){
+async function deleteTask(id,projectId){
     try {
         const response = await requestsApi(`tasks/${id}`, {
-            method:'DELETE'
+            method:'DELETE',
+            body: JSON.stringify(projectId)
         });
         return response.status;
     } catch (error) {
