@@ -8,27 +8,26 @@
                             <Button label="Yeni Görev" icon="pi pi-plus" class="mr-2" @click="openNew" />
                         </div>
                     </template>
+                    <template v-slot:end>
+                        <div class="my-2">
+                            <Button label="Kaydet"  icon="pi pi-save" class="mr-2" />
+                        </div>
+                    </template>
                 </Toolbar>
                 <div id="app">
                     <h2>Başlık</h2>
                     <div class="ganttGroup">
                         <div class="col-3">
-                            <DataTable
-                                data-key="id"
-                                :value="tasks"
-                                stripedRows
-                                tableStyle="w-full"
-                                class="dataTable"
-                            >
+                            <DataTable data-key="id" :value="tasks" stripedRows tableStyle="w-full" class="dataTable">
                                 <Column style="widht: 14%">
                                     <template #body="slotProps">
                                         <Button icon="pi pi-pencil" severity="success" class="ml-1 mr-1" @click="editTask(slotProps.data)" />
                                         <Button icon="pi pi-trash" severity="warning" class="ml-1 mr-1" @click="confirmDeleteTask(slotProps.data)" />
                                     </template>
                                 </Column>
-                                <Column field="name"  header="Görev" style="widht: 43%">
+                                <Column field="name" header="Görev" style="widht: 43%">
                                     <template #body="slotProps">
-                                        <span v-if="slotProps.data.name" v-tooltip.top="slotProps.data.name"> {{slotProps.data.name.slice(0,10)}} {{slotProps.data.name.length>10 ? '..' : '' }} </span>
+                                        <span v-if="slotProps.data.name" v-tooltip.top="slotProps.data.name"> {{ slotProps.data.name.slice(0, 10) }} {{ slotProps.data.name.length > 10 ? '..' : '' }} </span>
                                     </template>
                                 </Column>
                                 <Column field="users" header="Sorumlu" style="width: 43%">
@@ -84,7 +83,7 @@
 
 <script>
 import FrappeGantt from '../../../components/GanttChart.vue';
-import { getAllTasksByProjectId, createTask, deleteTask } from '../../../service/fetch/tasksApi';
+import { getAllTasksByProjectId, createTask, deleteTask, updateTask } from '../../../service/fetch/tasksApi';
 import { getAllLimitedUsers } from '../../../service/fetch/usersApi';
 import { getAllTaskUsers, updateTaskUsers } from '../../../service/fetch/taskUsersApi';
 
@@ -106,16 +105,18 @@ export default {
             selectedStartDate: null,
             selectedEndDate: null,
             selectedDependencies: [],
-            dependencies:[],
+            dependencies: [],
             description: '',
             errors: [],
             tasks: [{}],
             debugEventLog: [],
             ids: [],
-            users:[],
-            userNames:[],
-            selectedTask:null,
-            deleteTaskDialog:false
+            users: [],
+            userNames: [],
+            selectedTask: null,
+            deleteTaskDialog: false,
+            startDateRange:null,
+            endDateRange:null
         };
     },
     created() {
@@ -125,23 +126,24 @@ export default {
     },
     methods: {
         async getTasks(taskId) {
-        this.projectId = this.$route.params.projectId;
+            this.projectId = this.$route.params.projectId;
             try {
                 const data = await getAllTasksByProjectId(taskId);
-                if(data.length === 0){
-                    this.tasks = [{
-                        id:null,
-                        name:null,
-                        start:null,
-                        end:null
-                    }];
+                if (data.length === 0) {
+                    this.tasks = [
+                        {
+                            id: null,
+                            name: null,
+                            start: null,
+                            end: null
+                        }
+                    ];
                 } else {
                     this.tasks = data;
-                    this.tasks.forEach(task => {
+                    this.tasks.forEach((task) => {
                         this.dependencies.push(task.dependencies);
                     });
                 }
-
             } catch (error) {
                 console.error('Error fetching tasks', error);
             }
@@ -156,12 +158,12 @@ export default {
         },
         getTaskUsers(taskId) {
             getAllTaskUsers(taskId)
-            .then(data => {
-                this.responsible = data;
-            })
-            .catch(error => {
-                console.error('Error fetching task users:',error);
-            })
+                .then((data) => {
+                    this.responsible = data;
+                })
+                .catch((error) => {
+                    console.error('Error fetching task users:', error);
+                });
         },
         demoViewMode(viewMode) {
             this.mode = viewMode;
@@ -176,6 +178,11 @@ export default {
             const newUserTaskArray = [];
             const projectId = this.$route.params.projectId;
             const normalizedName = this.name.replace(/\s+/g, ' ').trim();
+            this.selectedResponsible.forEach((sR) => {
+                this.userNames.push(sR.userName);
+            });
+            const responsibleIds = this.getIds(this.selectedResponsible);
+            const dependenciesIds = this.getIds(this.selectedDependencies);
             if (!this.name.trim()) {
                 this.errors.push('Task adı boş geçilemez..');
             } else if (!this.selectedStartDate) {
@@ -186,13 +193,6 @@ export default {
                 this.errors.push('Task bitiş tarihi, başlama tarihinden küçük olamaz');
             } else {
                 if (!this.id) {
-                    this.selectedResponsible.forEach(sR => {
-                        this.userNames.push(sR.userName);
-                    });
-                    console.log(this.selectedDependencies);
-                    console.log(this.selectedResponsible);
-                    const responsibleIds = this.getIds(this.selectedResponsible);
-                    const dependenciesIds = this.getIds(this.selectedDependencies);
                     const newTask = {
                         projectId: projectId,
                         name: normalizedName,
@@ -200,7 +200,7 @@ export default {
                         end: this.selectedEndDate,
                         description: this.description,
                         dependencies: dependenciesIds,
-                        users:this.userNames
+                        users: this.userNames
                     };
                     this.tasks.push(newTask);
                     this.$toast.add({
@@ -238,7 +238,7 @@ export default {
                         });
                     }
                 } else {
-                    //update
+                    this.updateTask(projectId, normalizedName, dependenciesIds, responsibleIds);
                 }
                 this.clearTaskDialog();
                 this.getTasks(projectId);
@@ -257,6 +257,7 @@ export default {
             this.selectedEndDate = null;
             this.selectedDependencies = [];
             this.description = '';
+            this.userNames = [];
         },
         getIds(items) {
             this.ids = [];
@@ -269,7 +270,7 @@ export default {
             const responsibleUsers = data.users;
             if (responsibleUsers && responsibleUsers.length > 0) {
                 const totalLength = responsibleUsers.join(', ').length;
-                
+
                 if (totalLength > 10) {
                     return responsibleUsers.join(', ').slice(0, 10) + '..';
                 } else {
@@ -281,7 +282,6 @@ export default {
         },
 
         editTask(updateTask) {
-
             this.clearTaskDialog();
 
             this.id = updateTask.id;
@@ -291,56 +291,66 @@ export default {
             this.selectedEndDate = updateTask.end;
             this.description = updateTask.description;
 
-            console.log(this.dependencies)
-
-            console.log('updateTask.dependencies:', updateTask.dependencies);
-            console.log('this.dependencies:', this.dependencies);
-
-            updateTask.dependencies.forEach(dep => {
-                const foundDependency = this.dependencies.find(d => d === dep);
-                if (foundDependency) {
-                    this.selectedDependencies.push(dep);
-                }
-            });
-
-            console.log('this.selectedDependencies:', this.selectedDependencies);
+            this.selectedResponsible = this.users.filter((user) => updateTask.users.includes(user.userName));
+            this.selectedDependencies = this.tasks.filter((task) => updateTask.dependencies.includes(task.id));
 
             this.taskDialog = true;
         },
-        // getDependenciesTaskName(taskId){
-        //     const task = this.tasks.find((task) => task.id === taskId);
-        //     return task ?
-        //     task.name : '';
-        // },
-        confirmDeleteTask(deleteTask){
+        async updateTask(projectId, normalizedName, dependenciesIds, responsibleIds) {
+            try {
+                const updatedTask = {
+                    id: this.id,
+                    projectId: projectId,
+                    name: normalizedName,
+                    start: this.selectedStartDate,
+                    end: this.selectedEndDate,
+                    description: this.description,
+                    dependencies: dependenciesIds,
+                    users: this.userNames
+                };
+                const response = await updateTask(this.id, updatedTask);
+                if (response === 204) {
+                    this.$toast.add({ severity: 'success', summary: 'Successful', detail: 'Task Updated', life: 3000 });
+                    this.getTasks(projectId);
+                } else {
+                    this.$toast.add({ severity: 'error', summary: 'Error', detail: 'Task not Updated', life: 3000 });
+                }
+                this.clearTaskDialog();
+                this.cancelClick();
+            } catch (error) {
+                console.error('Error updating task:', error);
+                this.$toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to update task', life: 3000 });
+            }
+        },
+        confirmDeleteTask(deleteTask) {
             const taskName = deleteTask.name;
             this.selectedTask = deleteTask;
             this.deleteTaskDialog = true;
         },
-        async deleteTask(){
+        async deleteTask() {
             const deletedTaskId = this.selectedTask.id;
             this.projectId = this.$route.params.projectId;
             try {
-                const response = await deleteTask(deletedTaskId,this.projectId);
-                if(response === 204){
-                    this.$toast.add({severity: 'success', summary:'Successful', detail:'Task Deleted', life:3000});
+                const response = await deleteTask(deletedTaskId, this.projectId);
+                if (response === 204) {
+                    this.$toast.add({ severity: 'success', summary: 'Successful', detail: 'Task Deleted', life: 3000 });
                     this.getTasks(this.projectId);
                     this.getLimitedUsers();
                 } else {
-                    this.$toast.add({severity: 'error', summary:'Eroor', detail:'Task not Deleted', life:3000});
+                    this.$toast.add({ severity: 'error', summary: 'Eroor', detail: 'Task not Deleted', life: 3000 });
                 }
                 this.deleteTaskDialog = false;
                 this.selectedTask = null;
             } catch (error) {
                 console.error('Error deleting task:', error);
-                this.$toast.add({severity: 'error', summary: 'Error', detail: 'Failed to delete task', life: 3000});
+                this.$toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to delete task', life: 3000 });
             }
             this.deleteTaskDialog = false;
         }
-    },
-    
+    }
 };
 </script>
+
 
 <style lang="scss">
 #app {

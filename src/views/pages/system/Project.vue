@@ -208,7 +208,7 @@ export default {
                     this.getPorjets().then(() => {
                         this.updateDisplayedCards();
                     });
-                    this.getCompanies;
+                    this.getCompanies();
                 } else {
                     this.$toast.add({severity: 'error', summary: 'Error', detail: 'Project not Updated', life: 3000});
                 }
