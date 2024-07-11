@@ -57,7 +57,20 @@ export default {
                 on_view_change: (mode) => {
                     this.$emit('view-mode-updated', mode);
                 },
+                // custom_popup_html : function(task) {
+                //     return `
+                //         <div class="details-container">
+                //             <h5 class="taskName">${task.name}</h5>
+                //             <p>Task started on: ${task._start.getDate()}</p>
+                //             <p>Expected to finish by ${task._end.getDate()}</p>
+                //             <p>${task.progress}% completed!</p>
+                //             <span>
+                //             </span>
+                //         </div>
+                //         `;
+                // }
             });
+
             this.updateTasks();
             this.updateViewMode();
         },
@@ -65,6 +78,7 @@ export default {
         updateViewMode () {
             this.gantt.change_view_mode(this.viewMode[0].toUpperCase() + this.viewMode.substring(1));
         },
+
         updateTasks () {
             this.gantt.refresh(this.tasks);
         }
@@ -73,5 +87,13 @@ export default {
 </script>
 
 <style lang="scss">
+// .gantt-container .popup-wrapper {
+//     width: 200px !important;
+//     padding: 0 5px;
+// }
+
+// .taskName{
+//     color: white;
+// }
 
 </style>

@@ -15,7 +15,7 @@
                     </template>
                 </Toolbar>
                 <div id="app">
-                    <h2>Başlık</h2>
+                    <h2>{{ projectHeader }}</h2>
                     <div class="ganttGroup">
                         <div class="col-3">
                             <DataTable data-key="id" :value="tasks" stripedRows tableStyle="w-full" class="dataTable">
@@ -86,6 +86,7 @@ import FrappeGantt from '../../../components/GanttChart.vue';
 import { getAllTasksByProjectId, createTask, deleteTask, updateTask } from '../../../service/fetch/tasksApi';
 import { getAllLimitedUsers } from '../../../service/fetch/usersApi';
 import { getAllTaskUsers, updateTaskUsers } from '../../../service/fetch/taskUsersApi';
+import { getOneProject, updateProject } from '../../../service/fetch/projectsApi';
 
 export default {
     name: 'App',
@@ -115,13 +116,21 @@ export default {
             userNames: [],
             selectedTask: null,
             deleteTaskDialog: false,
-            startDateRange:null,
-            endDateRange:null
+            startDates:[],
+            endDates:[],
+            startDate:null,
+            endDate:null,
+            projectHeader:null
         };
     },
     created() {
         this.projectId = this.$route.params.projectId;
-        this.getTasks(this.projectId);
+        this.getTasks(this.projectId)
+        .then(() => {
+            this.getFisrtStartDate();
+            this.getLastEndDate();
+            this.updateProject();
+        });
         this.getLimitedUsers();
     },
     methods: {
@@ -346,11 +355,63 @@ export default {
                 this.$toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to delete task', life: 3000 });
             }
             this.deleteTaskDialog = false;
+        },
+        getFisrtStartDate(){
+            this.tasks.forEach(task => {
+                this.startDates.push(task.start);
+            });
+
+            this.startDates = this.quickSort(this.startDates);
+            this.startDate = this.startDates[0];
+        },
+        getLastEndDate(){
+            this.tasks.forEach(task =>{
+                this.endDates.push(task.end);
+            });
+            this.endDates = this.quickSort(this.endDates);
+            const endDatesLength = this.endDates.length;
+            this.endDate = this.endDates[endDatesLength-1];
+        },
+        quickSort(arr){
+            if(arr.length <= 1){
+                return arr;
+            }
+
+            const pivot = arr[0];
+            const left = [];
+            const right = [];
+
+            for(let i = 1 ; i<arr.length; i++){
+                if(arr[i]<pivot){
+                    left.push(arr[i]);
+                } else {
+                    right.push(arr[i]);
+                }
+            }
+            return [...this.quickSort(left), pivot, ...this.quickSort(right)];
+        },
+        async updateProject(){
+            this.projectId = this.$route.params.projectId;
+            const project = await getOneProject(this.projectId);
+            this.projectHeader = project.projectName;
+            try {
+                const updatedProject ={
+                    id:this.projectId,
+                    companyId:project.companyId,
+                    projectName:project.projectName,
+                    startDate:this.startDate,
+                    endDate:this.endDate,
+                    description:project.description,
+                    statutes:project.statutes
+                };
+                await updateProject(this.projectId, updatedProject);
+            } catch (error) {
+                console.error('Error updating project dates:', error);
+            }
         }
     }
 };
 </script>
-
 
 <style lang="scss">
 #app {
