@@ -1,60 +1,70 @@
 <template>
-    <div class="grid">
-        <div class="col-12">
-            <div class="card">
-                <Toolbar class="mb-4">
-                    <template v-slot:start>
-                        <div class="my-2">
-                            <Button label="Yeni Görev" icon="pi pi-plus" class="mr-2" @click="openNew" />
-                        </div>
-                    </template>
-                    <template v-slot:end>
-                        <div class="my-2">
-                            <Button label="Kaydet"  icon="pi pi-save" class="mr-2" />
-                        </div>
-                    </template>
-                </Toolbar>
-                <div id="app">
-                    <h2>{{ projectHeader }}</h2>
-                    <div class="ganttGroup">
-                        <div class="col-3">
-                            <DataTable data-key="id" :value="tasks" stripedRows tableStyle="w-full" class="dataTable">
-                                <Column style="widht: 14%">
-                                    <template #body="slotProps">
-                                        <Button icon="pi pi-pencil" severity="success" class="ml-1 mr-1" @click="editTask(slotProps.data)" />
-                                        <Button icon="pi pi-trash" severity="warning" class="ml-1 mr-1" @click="confirmDeleteTask(slotProps.data)" />
-                                    </template>
-                                </Column>
-                                <Column field="name" header="Görev" style="widht: 43%">
-                                    <template #body="slotProps">
-                                        <span v-if="slotProps.data.name" v-tooltip.top="slotProps.data.name"> {{ slotProps.data.name.slice(0, 10) }} {{ slotProps.data.name.length > 10 ? '..' : '' }} </span>
-                                    </template>
-                                </Column>
-                                <Column field="users" header="Sorumlu" style="width: 43%">
-                                    <template #body="slotProps">
-                                        <span v-if="slotProps.data.users.length > 0" v-tooltip.top="slotProps.data.users.join(', ')">
-                                            {{ getUserNames(slotProps.data) }}
-                                        </span>
-                                    </template>
-                                </Column>
-                            </DataTable>
-                        </div>
-                        <div class="col-9">
-                            <Button label="Günlük" severity="secondary" @click="demoViewMode('day')" text />
-                            <Button label="Haftalık" severity="secondary" @click="demoViewMode('week')" text />
-                            <Button label="Aylık" severity="secondary" @click="demoViewMode('month')" text />
-                            <frappe-gantt :view-mode="mode" :tasks="tasks" @task-updated="debugEventLog.push($event)" @task-date-updated="debugEventLog.push($event)" @task-progress-change="debugEventLog.push($event)" />
-                        </div>
+<div class="grid">
+    <div class="col-12">
+        <div class="card">
+            <Toolbar class="mb-4">
+                <template v-slot:start>
+                    <div class="my-2">
+                        <Button label="Yeni Görev" icon="pi pi-plus" class="mr-2" @click="openNew" />
+                    </div>
+                </template>
+                <template v-slot:end>
+                    <div class="my-2">
+                        <Button label="Kaydet" icon="pi pi-save" class="mr-2" @click="saveChanges" />
+                    </div>
+                </template>
+            </Toolbar>
+            <div id="app">
+                <h2>{{ projectHeader }}</h2>
+                <div class="ganttGroup">
+                    <div class="col-3">
+                        <DataTable dataKey="id" :value="tasks" stripedRows tableStyle="w-full" class="dataTable">
+                            <Column style="widht: 14%">
+                                <template #body="slotProps">
+                                    <Button icon="pi pi-pencil" severity="success" class="ml-1 mr-1" @click="editTask(slotProps.data)" />
+                                    <Button icon="pi pi-trash" severity="warning" class="ml-1 mr-1" @click="confirmDeleteTask(slotProps.data)" />
+                                </template>
+                            </Column>
+                            <Column field="name" header="Görev" style="widht: 43%">
+                                <template #body="slotProps">
+                                    <span v-if="slotProps.data.name" v-tooltip.top="slotProps.data.name"> {{ slotProps.data.name.slice(0, 10) }} {{ slotProps.data.name.length > 10 ? '..' : '' }} </span>
+                                </template>
+                            </Column>
+                            <Column field="users" header="Sorumlu" style="width: 43%">
+                                <template #body="slotProps">
+                                    <span v-if="slotProps.data.users.length > 0" v-tooltip.top="slotProps.data.users.join(', ')">
+                                        {{ getUserNames(slotProps.data) }}
+                                    </span>
+                                </template>
+                            </Column>
+                        </DataTable>
+                    </div>
+                    <div class="col-9">
+                        <Button label="Günlük" severity="secondary" @click="demoViewMode('day')" text />
+                        <Button label="Haftalık" severity="secondary" @click="demoViewMode('week')" text />
+                        <Button label="Aylık" severity="secondary" @click="demoViewMode('month')" text />
+                        <frappe-gantt :view-mode="mode" :tasks="tasks" @task-updated="debugEventLog.push($event)" @task-date-updated="debugEventLog.push($event)" @task-progress-change="debugEventLog.push($event)" />
                     </div>
                 </div>
-                <Dialog v-model:visible="taskDialog" :style="{ width: '400px' }" header="Yeni Proje" :modal="true" class="p-fluid">
-                    <InputText id="name" v-model="name" placeholder="Task Adı" class="input" />
-                    <MultiSelect v-model="selectedResponsible" :options="users" optionLabel="userName" filter placeholder="Sorumlu Kişi" :maxSelectedLabels="3" class="w-full md:w-80 multiSelect" />
-                    <Calendar placeholder="Başlanma Tarihi" v-model="selectedStartDate" showIcon iconDisplay="input" inputId="icondisplay" class="calendar" />
-                    <Calendar placeholder="Bitiş Tarihi" v-model="selectedEndDate" showIcon iconDisplay="input" inputId="icondisplay" class="calendar" />
-                    <MultiSelect v-model="selectedDependencies" :options="tasks" optionLabel="name" filter placeholder="Bağımlı Olacağı Görevler" :maxSelectedLabels="3" class="w-full md:w-80 multiSelect" />
-                    <Textarea id="description" v-model="description" placeholder="Açıklama" :autoResize="true" rows="7" cols="30" class="textarea" />
-                    <div class="error-message">
+                <!-- <div>
+                        <h5>These are the events being emitted by the Vue.js component wrapper for Frappe Gantt</h5>
+                            <ul>
+                                <li
+                                    v-for="event in debugEventLog"
+                                    :key="event.id">
+                                    {{ event }}
+                                </li>
+                            </ul>
+                            </div> -->
+            </div>
+            <Dialog v-model:visible="taskDialog" :style="{ width: '400px' }" header="Yeni Proje" :modal="true" class="p-fluid">
+                <InputText id="name" v-model="name" placeholder="Task Adı" class="input" />
+                <MultiSelect v-model="selectedResponsible" :options="users" optionLabel="userName" filter placeholder="Sorumlu Kişi" :maxSelectedLabels="3" class="w-full md:w-80 multiSelect" />
+                <Calendar placeholder="Başlanma Tarihi" v-model="selectedStartDate" showIcon iconDisplay="input" inputId="icondisplay" class="calendar" />
+                <Calendar placeholder="Bitiş Tarihi" v-model="selectedEndDate" showIcon iconDisplay="input" inputId="icondisplay" class="calendar" />
+                <MultiSelect v-model="selectedDependencies" :options="tasks" optionLabel="name" filter placeholder="Bağımlı Olacağı Görevler" :maxSelectedLabels="3" class="w-full md:w-80 multiSelect" />
+                <Textarea id="description" v-model="description" placeholder="Açıklama" :autoResize="true" rows="7" cols="30" class="textarea" />
+                <div class="error-message">
                         <div v-for="(error, index) in errors" :key="index">
                             {{ error }}
                         </div>
@@ -83,10 +93,23 @@
 
 <script>
 import FrappeGantt from '../../../components/GanttChart.vue';
-import { getAllTasksByProjectId, createTask, deleteTask, updateTask } from '../../../service/fetch/tasksApi';
-import { getAllLimitedUsers } from '../../../service/fetch/usersApi';
-import { getAllTaskUsers, updateTaskUsers } from '../../../service/fetch/taskUsersApi';
-import { getOneProject, updateProject } from '../../../service/fetch/projectsApi';
+import {
+    getAllTasksByProjectId,
+    createTask,
+    deleteTask,
+    updateTask
+} from '../../../service/fetch/tasksApi';
+import {
+    getAllLimitedUsers
+} from '../../../service/fetch/usersApi';
+import {
+    getAllTaskUsers,
+    updateTaskUsers
+} from '../../../service/fetch/taskUsersApi';
+import {
+    getOneProject,
+    updateProject
+} from '../../../service/fetch/projectsApi';
 
 export default {
     name: 'App',
@@ -116,21 +139,21 @@ export default {
             userNames: [],
             selectedTask: null,
             deleteTaskDialog: false,
-            startDates:[],
-            endDates:[],
-            startDate:null,
-            endDate:null,
-            projectHeader:null
+            startDates: [],
+            endDates: [],
+            startDate: null,
+            endDate: null,
+            projectHeader: null
         };
     },
     created() {
         this.projectId = this.$route.params.projectId;
         this.getTasks(this.projectId)
-        .then(() => {
-            this.getFisrtStartDate();
-            this.getLastEndDate();
-            this.updateProject();
-        });
+            .then(() => {
+                this.getFisrtStartDate();
+                this.getLastEndDate();
+                this.updateProject();
+            });
         this.getLimitedUsers();
     },
     methods: {
@@ -139,16 +162,15 @@ export default {
             try {
                 const data = await getAllTasksByProjectId(taskId);
                 if (data.length === 0) {
-                    this.tasks = [
-                        {
-                            id: null,
-                            name: null,
-                            start: null,
-                            end: null
-                        }
-                    ];
+                    const tempTask = {
+                        id: null,
+                        name: null,
+                        start: null,
+                        end: null
+                    };
+                    this.tasks.push(tempTask);
                 } else {
-                    this.tasks = data;
+                    this.tasks = [...data];
                     this.tasks.forEach((task) => {
                         this.dependencies.push(task.dependencies);
                     });
@@ -319,16 +341,31 @@ export default {
                 };
                 const response = await updateTask(this.id, updatedTask);
                 if (response === 204) {
-                    this.$toast.add({ severity: 'success', summary: 'Successful', detail: 'Task Updated', life: 3000 });
+                    this.$toast.add({
+                        severity: 'success',
+                        summary: 'Successful',
+                        detail: 'Task Updated',
+                        life: 3000
+                    });
                     this.getTasks(projectId);
                 } else {
-                    this.$toast.add({ severity: 'error', summary: 'Error', detail: 'Task not Updated', life: 3000 });
+                    this.$toast.add({
+                        severity: 'error',
+                        summary: 'Error',
+                        detail: 'Task not Updated',
+                        life: 3000
+                    });
                 }
                 this.clearTaskDialog();
                 this.cancelClick();
             } catch (error) {
                 console.error('Error updating task:', error);
-                this.$toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to update task', life: 3000 });
+                this.$toast.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: 'Failed to update task',
+                    life: 3000
+                });
             }
         },
         confirmDeleteTask(deleteTask) {
@@ -342,21 +379,36 @@ export default {
             try {
                 const response = await deleteTask(deletedTaskId, this.projectId);
                 if (response === 204) {
-                    this.$toast.add({ severity: 'success', summary: 'Successful', detail: 'Task Deleted', life: 3000 });
+                    this.$toast.add({
+                        severity: 'success',
+                        summary: 'Successful',
+                        detail: 'Task Deleted',
+                        life: 3000
+                    });
                     this.getTasks(this.projectId);
                     this.getLimitedUsers();
                 } else {
-                    this.$toast.add({ severity: 'error', summary: 'Eroor', detail: 'Task not Deleted', life: 3000 });
+                    this.$toast.add({
+                        severity: 'error',
+                        summary: 'Eroor',
+                        detail: 'Task not Deleted',
+                        life: 3000
+                    });
                 }
                 this.deleteTaskDialog = false;
                 this.selectedTask = null;
             } catch (error) {
                 console.error('Error deleting task:', error);
-                this.$toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to delete task', life: 3000 });
+                this.$toast.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: 'Failed to delete task',
+                    life: 3000
+                });
             }
             this.deleteTaskDialog = false;
         },
-        getFisrtStartDate(){
+        getFisrtStartDate() {
             this.tasks.forEach(task => {
                 this.startDates.push(task.start);
             });
@@ -364,16 +416,43 @@ export default {
             this.startDates = this.quickSort(this.startDates);
             this.startDate = this.startDates[0];
         },
-        getLastEndDate(){
-            this.tasks.forEach(task =>{
+        saveChanges() {
+            this.debugEventLog.forEach(async event => {
+                const updatedTask = this.tasks.find(task => task.id === event.task.id);
+                if (updatedTask) {
+                    updatedTask.start = event.start;
+                    updatedTask.end = event.end;
+
+                    const response = await updateTask(updatedTask.id, updatedTask);
+                    if (response === 204) {
+                        this.$toast.add({
+                            severity: 'success',
+                            summary: 'Successful',
+                            detail: 'Changes Successfully Registered',
+                            life: 3000
+                        });
+                    } else {
+                        this.$toast.add({
+                            severity: 'error',
+                            summary: 'Error',
+                            detail: 'Something went wrong during changes registered',
+                            life: 3000
+                        });
+                    }
+                }
+                this.debugEventLog = [];
+            })
+        },
+        getLastEndDate() {
+            this.tasks.forEach(task => {
                 this.endDates.push(task.end);
             });
             this.endDates = this.quickSort(this.endDates);
             const endDatesLength = this.endDates.length;
-            this.endDate = this.endDates[endDatesLength-1];
+            this.endDate = this.endDates[endDatesLength - 1];
         },
-        quickSort(arr){
-            if(arr.length <= 1){
+        quickSort(arr) {
+            if (arr.length <= 1) {
                 return arr;
             }
 
@@ -381,8 +460,8 @@ export default {
             const left = [];
             const right = [];
 
-            for(let i = 1 ; i<arr.length; i++){
-                if(arr[i]<pivot){
+            for (let i = 1; i < arr.length; i++) {
+                if (arr[i] < pivot) {
                     left.push(arr[i]);
                 } else {
                     right.push(arr[i]);
@@ -390,19 +469,21 @@ export default {
             }
             return [...this.quickSort(left), pivot, ...this.quickSort(right)];
         },
-        async updateProject(){
+        async updateProject() {
             this.projectId = this.$route.params.projectId;
             const project = await getOneProject(this.projectId);
+            const updatedEndDate = new Date(project.endDate);
+            updatedEndDate.setDate(updatedEndDate.getDate() - 1);
             this.projectHeader = project.projectName;
             try {
-                const updatedProject ={
-                    id:this.projectId,
-                    companyId:project.companyId,
-                    projectName:project.projectName,
-                    startDate:this.startDate,
-                    endDate:this.endDate,
-                    description:project.description,
-                    statutes:project.statutes
+                const updatedProject = {
+                    id: this.projectId,
+                    companyId: project.companyId,
+                    projectName: project.projectName,
+                    startDate: this.startDate,
+                    endDate: updatedEndDate,
+                    description: project.description,
+                    statutes: project.statutes
                 };
                 await updateProject(this.projectId, updatedProject);
             } catch (error) {
@@ -420,6 +501,7 @@ export default {
     -moz-osx-font-smoothing: grayscale;
     color: #2c3e50;
 }
+
 .ganttGroup {
     display: flex;
 }

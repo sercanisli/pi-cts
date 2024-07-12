@@ -16,6 +16,11 @@ import AppMenuItem from './AppMenuItem.vue';
                     label:'Bağlantılar',
                     icon:'pi pi-link',
                     to:'/'
+                },
+                {
+                    label:'Projeler',
+                    icon:'pi pi-map',
+                    to:'/projects'
                 }
             ]
         },

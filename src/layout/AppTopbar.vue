@@ -147,6 +147,10 @@ const onEditClick = () => {
     }
 };
 
+const onBellClick = () => {
+    
+}
+
 const onSettingsClick = () => {
     visible.value = !visible.value;
 }
@@ -246,8 +250,10 @@ const getUsernameFromUserInfo = (userInfo) => {
         <button :model="items" class="p-link layout-topbar-menu-button layout-topbar-button" @click="onTopBarMenuButton()">
             <i class="pi pi-ellipsis-v"></i>
         </button>
-
         <div class="layout-topbar-menu" :class="topbarMenuClasses">
+            <button @click="onBellClick()" class="p-link layout-topbar-button">
+                <i class="pi pi-bell"></i>
+            </button>
             <button @click="onSettingsClick()" class="p-link layout-topbar-button">
                 <i class="pi pi-cog"></i>
                 <span>Settings</span>

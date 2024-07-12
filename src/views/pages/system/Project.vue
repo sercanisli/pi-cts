@@ -18,12 +18,12 @@
                     </template>
                 </Toolbar>
                 <div class="mb-4 col-12">
-                    <div class="grid grid-cols-3 sm:grid-cols-12 md:grid-cols-6 justify-content-center">
+                    <div class="grid grid-cols-3 sm:grid-cols-12 md:grid-cols-6 justify-content-center divGrid">
                         <div v-for="(item, index) in displayedCards" :key="index" class="m-2 col-span-1">
                             <div class="card" style="width: 22rem; overflow: hidden; border-radius: 8px; padding: 1rem">
                                 <h3>{{ item.projectName }}</h3>
                                 <p>{{ item.companyCompanyName }}</p>
-                                <p>
+                                <p> 
                                     {{ item.description }}
                                 </p>
                                 <p>Başlama Tarihi : {{ getDate(item.startDate) }}</p>

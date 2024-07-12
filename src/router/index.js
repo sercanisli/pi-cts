@@ -65,6 +65,12 @@ const router = createRouter({
                     meta: { requiresAuth: true }
                 },
                 {
+                    path:'/projects',
+                    name:'projects',
+                    component: () => import('@/views/pages/Projects.vue'),
+                    meta: { requiresAuth: true}
+                },  
+                {
                     path: '/auth/access',
                     name: 'accessDenied',
                     component: () => import('@/views/pages/auth/Access.vue')
