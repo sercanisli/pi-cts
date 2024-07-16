@@ -69,7 +69,13 @@ const router = createRouter({
                     name:'projects',
                     component: () => import('@/views/pages/Projects.vue'),
                     meta: { requiresAuth: true}
-                },  
+                }, 
+                {
+                    path:'/projects/tasks/:projectId',
+                    name:'projectTasks',
+                    component: () => import('@/views/pages/Tasks.vue'),
+                    meta: { requiresAuth: true}
+                }, 
                 {
                     path: '/auth/access',
                     name: 'accessDenied',

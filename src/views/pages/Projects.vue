@@ -13,8 +13,8 @@
                <div class="col-12 projectsDiv">
                     <div class="card cardDiv">
                         <div class="grid grid-cols-3 md:grid-cols-6 sm:grid-cols-12 justify-content-center gridDiv">
-                            <div v-for="(item, index) in displayedCards" :key="index"  @click="goToTasks">
-                                <Card style=" overflow: hidden" class="clickableDiv">
+                            <div v-for="(item, index) in displayedCards" :key="index">
+                                <Card style=" overflow: hidden" class="clickableDiv" @click="goToTasks(item)">
                                     <template #title>{{item.projectName}}</template>
                                     <template #subtitle>{{item.companyCompanyName}}</template>
                                     <template #content>
@@ -46,6 +46,7 @@
 
 <script>
 import { getAllProjects } from '../../service/fetch/projectsApi';
+import { getAllTasksByProjectId } from '../../service/fetch/tasksApi';
 
 export default {
     data(){
@@ -71,8 +72,8 @@ export default {
                 console.error('Error fetching projects:', error);
             }
         },
-        goToTasks(){
-            console.log("Tıklandı")
+        goToTasks(item){
+            this.$router.push({name : 'projectTasks', params: { projectId: item.id } });
         },
         getDate(date){
             const newDate = new Date(date);
