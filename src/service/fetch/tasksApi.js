@@ -56,6 +56,32 @@ async function updateTask(id, taskData){
     }
 }
 
+async function updateTaskStatus(task){
+    try {
+        const response = await requestsApi('tasks/UpdateTaskStatusAsync', {
+            method:'PUT',
+            body:JSON.stringify(task)
+        });
+        return response.status;
+    } catch (error) {
+        console.error('Error changing a task status:', error.message);
+        throw error;
+    }
+}
+
+async function updateTaskProgress(task){
+    try {
+        const response = await requestsApi('tasks/UpdateTaskProgressAsync', {
+            method:'PUT',
+            body:JSON.stringify(task)
+        });
+        return response.status;
+    } catch (error) {
+        console.error('Error changing a task progress:', error.message);
+        throw error;
+    }
+}
+
 async function deleteTask(id,projectId){
     try {
         const response = await requestsApi(`tasks/${id}`, {
@@ -69,4 +95,4 @@ async function deleteTask(id,projectId){
     }
 }
 
-export { getAllTasks, getAllTasksByProjectId, getOneTask, createTask, updateTask, deleteTask}
+export { getAllTasks, getAllTasksByProjectId, getOneTask, createTask, updateTask, updateTaskStatus, updateTaskProgress, deleteTask}

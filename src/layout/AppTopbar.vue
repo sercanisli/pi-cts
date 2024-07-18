@@ -1,10 +1,15 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, onBeforeMount } from 'vue';
 import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
 import logo from '../assets/logo/logo.png';
 import { logout } from '../service/fetch/authenticationsApi';
 import { usePrimeVue } from 'primevue/config';
+import { getOneUserByUserName } from '../service/fetch/usersApi';
+import { getAllUserTasks, updateTaskSaw } from '../service/fetch/taskUsersApi';
+import { getAllLimitedProjects } from '../service/fetch/projectsApi';
+import { updateTaskStatus } from '../service/fetch/tasksApi';
+import { useToast } from 'primevue/usetoast';
 
 defineProps({
     simple: {
@@ -14,6 +19,7 @@ defineProps({
 });
 
 const $primevue = usePrimeVue();
+const toast = useToast();
 const inputStyle = computed(() => $primevue.config.inputStyle || 'outlined');
 
 const { layoutConfig, onMenuToggle, setScale } = useLayout();
@@ -23,7 +29,10 @@ const topbarMenuActive = ref(false);
 const router = useRouter();
 const user = ref(true);
 const showConfig = ref(false);
-
+const bellDialog = ref(false);
+const tasks = ref([]);
+const projects = ref([]);
+const hasNotifications = ref(false);
 
 const scales = ref([12, 13, 14, 15, 16]);
 const visible = ref(false);
@@ -38,6 +47,11 @@ const menuModes = ref([
 const compactMaterial = ref(false);
 const primaryFocusRing = ref(true);
 
+onBeforeMount(() => {
+    getUser();
+    tasksSaw();
+});
+
 onMounted(() => {
     bindOutsideClickListener();
 });
@@ -46,9 +60,9 @@ onBeforeUnmount(() => {
     unbindOutsideClickListener();
 });
 
-const onTopBarMenuButton= () => {
+const onTopBarMenuButton = () => {
     topbarMenuActive.value = !topbarMenuActive.value;
-}
+};
 
 const onChangeTheme = (theme, mode) => {
     $primevue.changeTheme(layoutConfig.theme.value, theme, 'theme-css', () => {
@@ -147,13 +161,80 @@ const onEditClick = () => {
     }
 };
 
-const onBellClick = () => {
+const getUser = async () => {
+    const userName = localStorage.getItem('userName');
+    const requestUser = {
+        userName:userName
+    }
+    const user = await getOneUserByUserName(requestUser);
+    return user;
+}
+
+
+const tasksSaw = async () => {
     
+    const user = await getUser();
+    const requestForTasks = {
+        userId:user.id
+    }
+    const userTasks = await getAllUserTasks(requestForTasks);
+    let taskCount = 0;
+
+    userTasks.forEach(uT => {
+        if(uT.taskSaw === false){
+            taskCount=taskCount+1;
+        }
+    });
+    if(taskCount>0){
+        hasNotifications.value = true;
+    }
+}
+
+
+const onBellClick = async () => {
+    const user = await getUser();
+    
+    const requestForTasks = {
+        userId:user.id
+    }
+    const userTasks = await getAllUserTasks(requestForTasks);
+    tasks.value = userTasks;
+
+    projects.value = await getAllLimitedProjects();
+
+    if(hasNotifications.value === true) {
+        await updateTaskSaw(requestForTasks);
+        hasNotifications.value = false;
+    }
+
+    bellDialog.value = !bellDialog.value;
+};
+
+const getProjectName = (id) => {
+    return projects.value.find((p) => p.id == id).projectName;
+}
+
+const updateTaskStat = async (data) => {
+   try {
+    const newTaskStatus = {
+        id:data.taskId,
+        isCompleted:data.taskIsCompleted
+    }
+    const response = await updateTaskStatus(newTaskStatus);
+    if(response === 204){
+        toast.add({ severity: 'success', summary: 'Successful', detail: 'Task status updated', life: 3000 });
+    } else {
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to update task status', life: 3000 });
+    }
+   } catch (error) {
+        console.error('Error updating task status:', error);
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to update task status', life: 3000 });
+   }
 }
 
 const onSettingsClick = () => {
     visible.value = !visible.value;
-}
+};
 
 const pushToLogin = () => {
     logoutUser();
@@ -168,7 +249,7 @@ const pushToLogin = () => {
     document.cookie = 'refreshToken=';
     document.cookie = 'refreshTokenExpiryTime=';
     document.cookie = 'userName=';
-    document.cookie = 'userPermissions='
+    document.cookie = 'userPermissions=';
 };
 
 const logoutUser = () => {
@@ -240,7 +321,7 @@ const getUsernameFromUserInfo = (userInfo) => {
 <template>
     <div class="layout-topbar">
         <router-link to="/" class="layout-topbar-logo">
-            <img style="height:50px" :src="logoUrl" alt="logo" />
+            <img style="height: 50px" :src="logoUrl" alt="logo" />
         </router-link>
 
         <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
@@ -251,21 +332,30 @@ const getUsernameFromUserInfo = (userInfo) => {
             <i class="pi pi-ellipsis-v"></i>
         </button>
         <div class="layout-topbar-menu" :class="topbarMenuClasses">
-            <button @click="onBellClick()" class="p-link layout-topbar-button">
-                <i class="pi pi-bell"></i>
-            </button>
+                <div v-if="hasNotifications">
+                    <button @click="onBellClick()" class="p-link layout-topbar-button">
+                        <i v-badge.danger class="pi pi-bell"></i>
+                        <span > <p class="spanDiv"> Bildirim</p> </span>
+                    </button>
+                </div>
+                <div v-else>
+                    <button @click="onBellClick()" class="p-link layout-topbar-button">
+                        <i class="pi pi-bell"></i>
+                        <span > <p class="spanDiv"> Bildirim</p> </span>
+                    </button>
+                </div>
             <button @click="onSettingsClick()" class="p-link layout-topbar-button">
                 <i class="pi pi-cog"></i>
-                <span>Settings</span>
+                <span><p class="spanDiv"> Tema Ayarları </p></span>
             </button>
             <button @click="onEditClick()" class="p-link layout-topbar-button">
                 <i class="pi pi-user-edit"></i>
-                <span>Settings</span>
+                <span><p class="spanDiv"> Kullanıcı Ayarları </p></span>
             </button>
             <div>
                 <button v-if="user" @click="pushToLogin()" class="p-link layout-topbar-button">
                     <i class="pi pi-sign-out"></i>
-                    <span>Logout</span>
+                    <span><p class="spanDiv"> Çıkış </p></span>
                 </button>
             </div>
         </div>
@@ -552,6 +642,40 @@ const getUsernameFromUserInfo = (userInfo) => {
             </section>
         </div>
     </Sidebar>
+    <Dialog v-model:visible="bellDialog" :style="{ width: '850px' }" header="Görevler" :modal="true">
+        <div class="flex align-items-center justify-content-center">
+            <DataTable dataKey="id" :value="tasks" stripedRows paginator :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]" class="dialogDataTable" >
+                <Column field="taskId" header="Id" style="width: 0%"></Column>
+                <Column field="taskProjectId" header="Şirket Adı" style="width: 25%">
+                    <template #body="slotProps"> 
+                        <span v-if="slotProps.data.taskProjectId">
+                            {{getProjectName(slotProps.data.taskProjectId)}}
+                        </span>
+                    </template>
+                </Column>
+                <Column field="taskName" header="Görev Adı" style="25%"></Column>
+                <Column field="taskDescription" header="Açıklama" style="25%">
+                    <template #body="slotProps">
+                            <span v-if="slotProps.data.taskDescription" v-tooltip.top="slotProps.data.taskDescription"> {{ slotProps.data.taskDescription.slice(0, 20) }}{{ slotProps.data.taskDescription.length > 20 ? '...' : '' }} </span>
+                        </template>
+                </Column>
+                <Column field="taskIsCompleted" header="Tamamlanma Durumu" style="width: 25%">
+                        <template #body="{ data }">
+                            <InputSwitch v-model="data.taskIsCompleted" @change="updateTaskStat(data)"/>
+                        </template>
+                    </Column>
+            </DataTable>
+        </div>
+        <template #footer>
+            <Button label="Cancel" icon="pi pi-check" text @click="bellDialog=false" />
+        </template>
+    </Dialog>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.dialogDataTable{
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}  
+</style>

@@ -1,7 +1,12 @@
 <template>
     <div>
-        <svg ref="gantt" />
+        <svg ref="gantt"/>
     </div>
+    <Toolbar class="ganttToolbar">
+        <template v-slot:end>
+            <Button icon="pi pi-external-link" label="PDF" @click="exportPDF" />
+        </template>
+    </Toolbar>
 </template>
 
 <script>
@@ -22,30 +27,30 @@ export default {
             default: []
         }
     },
-    data () {
+    data() {
         return {
-            gantt: {},
+            gantt: {}
         };
     },
     watch: {
-        viewMode () {
+        viewMode() {
             this.updateViewMode();
         },
 
-        tasks () {
+        tasks() {
             this.updateTasks();
         }
     },
-    mounted () {
+    mounted() {
         this.setupGanttChart();
     },
     methods: {
-        setupGanttChart () {
+        setupGanttChart() {
             this.gantt = new Gantt(this.$refs.gantt, this.tasks, {
                 on_view_change: (mode) => {
                     this.$emit('view-mode-updated', mode);
                 },
-                custom_popup_html : function(task) {
+                custom_popup_html: function (task) {
                     return `
                         <div class="details-container">
                             <h5 class="taskName">${task.name}</h5>
@@ -65,48 +70,51 @@ export default {
             this.updateViewMode();
         },
 
-        updateViewMode () {
+        updateViewMode() {
             this.gantt.change_view_mode(this.viewMode[0].toUpperCase() + this.viewMode.substring(1));
         },
 
-        updateTasks () {
+        updateTasks() {
             this.gantt.refresh(this.tasks);
-        }
+        },
+        
     }
 };
 </script>
 
 <style lang="scss">
-.gantt-container .popup-wrapper {
-    width: 200px !important;
-    padding: 0 5px;
-}
-
-.taskName{
-    color: white;
-}
-.gantt .bar-wrapper:hover .handle {
-    display: none;
-    visibility: hidden !important;
-}
-.gantt .bar-wrapper:hover .progress {
-    display: none;
-    visibility: hidden !important;
-}
-.gantt .bar-wrapper:hover .right {
-    display: none;
-    visibility: hidden !important;
-}
-.gantt .bar-wrapper:hover .right {
-    display: none;
-    visibility: hidden !important;
-}
-.gantt .bar-wrapper .bar {
-  pointer-events: none; 
-  cursor: default;
-}
-.gantt .bar-label{
-    pointer-events: none; 
-    cursor: default; 
-}
+    .ganttToolbar {
+        margin-top: 20px;
+    }
+    .gantt-container .popup-wrapper {
+        width: 200px !important;
+        padding: 0 5px;
+    }
+    .taskName {
+        color: white;
+    }
+    .gantt .bar-wrapper:hover .handle {
+        display: none;
+        visibility: hidden !important;
+    }
+    .gantt .bar-wrapper:hover .progress {
+        display: none;
+        visibility: hidden !important;
+    }
+    .gantt .bar-wrapper:hover .right {
+        display: none;
+        visibility: hidden !important;
+    }
+    .gantt .bar-wrapper:hover .right {
+        display: none;
+        visibility: hidden !important;
+    }
+    .gantt .bar-wrapper .bar {
+        pointer-events: none;
+        cursor: default;
+    }
+    .gantt .bar-label {
+        pointer-events: none;
+        cursor: default;
+    }
 </style>

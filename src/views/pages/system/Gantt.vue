@@ -14,7 +14,7 @@
                     </div>
                 </template>
             </Toolbar>
-            <div id="app">
+            <div id="app" v-if="show">
                 <h2>{{ projectHeader }}</h2>
                 <div class="ganttGroup">
                     <div class="col-3">
@@ -32,9 +32,11 @@
                             </Column>
                             <Column field="users" header="Sorumlu" style="width: 43%">
                                 <template #body="slotProps">
-                                    <span v-if="slotProps.data.users.length > 0" v-tooltip.top="slotProps.data.users.join(', ')">
-                                        {{ getUserNames(slotProps.data) }}
-                                    </span>
+                                    <div v-if="slotProps.data.users">
+                                        <span v-if="slotProps.data.users.length > 0" v-tooltip.top="slotProps.data.users.join(', ')">
+                                            {{ getUserNames(slotProps.data) }}
+                                        </span>
+                                    </div>
                                 </template>
                             </Column>
                         </DataTable>
@@ -143,7 +145,8 @@ export default {
             endDates: [],
             startDate: null,
             endDate: null,
-            projectHeader: null
+            projectHeader: null,
+            show:false
         };
     },
     created() {
@@ -161,20 +164,15 @@ export default {
             this.projectId = this.$route.params.projectId;
             try {
                 const data = await getAllTasksByProjectId(taskId);
-                if (data.length === 0) {
-                    const tempTask = {
-                        id: null,
-                        name: null,
-                        start: null,
-                        end: null
-                    };
-                    this.tasks.push(tempTask);
-                } else {
-                    this.tasks = [...data];
-                    this.tasks.forEach((task) => {
-                        this.dependencies.push(task.dependencies);
-                    });
-                }
+                data.forEach(d => {
+                    if(d===undefined){
+                        this.show = false;
+                    } else {
+                        this.show = true;
+                        this.tasks = data;
+                    }
+                });
+
             } catch (error) {
                 console.error('Error fetching tasks', error);
             }

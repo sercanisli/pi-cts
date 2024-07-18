@@ -47,7 +47,7 @@ async function getOneUserByUserName(userName){
     try {
         const response = await requestsApi('users/GetOneUserByUserNameAsync', {
             method:'POST',
-            body: JSON.stringify(userName)
+            body: JSON.stringify(userName),
         });
         return response.json();
     } catch (error) {

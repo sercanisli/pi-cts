@@ -10,6 +10,19 @@ async function getAllTaskUsers(id) {
     }
 }   
 
+async function getAllUserTasks(userId) {
+    try {
+        const response = await requestsApi("taskusers/GetAllUserTasksByUserIdAsync", {
+            method:'POST',
+            body:JSON.stringify(userId),
+        })
+        return response.json();
+    } catch (error) {
+        console.error('Error fetching user tasks:', error.message);
+        throw error;
+    }
+}
+
 async function updateTaskUsers(id, newTaskUser){
     try {
         const response = await requestsApi(`taskusers/${id}`, {
@@ -23,4 +36,18 @@ async function updateTaskUsers(id, newTaskUser){
     }
 }
 
-export {getAllTaskUsers, updateTaskUsers}
+
+async function updateTaskSaw(user){
+    try {
+        const response = await requestsApi('taskusers/UpdateOneTaskSawAsync', {
+            method:'PUT',
+            body:JSON.stringify(user),
+        });
+        return response.status;
+    } catch (error) {
+        console.error('Error updating a user tasks saw', error.message);
+        throw error;
+    }
+}
+
+export {getAllTaskUsers, getAllUserTasks, updateTaskUsers, updateTaskSaw}

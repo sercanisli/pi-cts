@@ -57,18 +57,6 @@ export default {
                 on_view_change: (mode) => {
                     this.$emit('view-mode-updated', mode);
                 },
-                // custom_popup_html : function(task) {
-                //     return `
-                //         <div class="details-container">
-                //             <h5 class="taskName">${task.name}</h5>
-                //             <p>Task started on: ${task._start.getDate()}</p>
-                //             <p>Expected to finish by ${task._end.getDate()}</p>
-                //             <p>${task.progress}% completed!</p>
-                //             <span>
-                //             </span>
-                //         </div>
-                //         `;
-                // }
             });
 
             this.updateTasks();
@@ -87,13 +75,34 @@ export default {
 </script>
 
 <style lang="scss">
-// .gantt-container .popup-wrapper {
-//     width: 200px !important;
-//     padding: 0 5px;
-// }
 
-// .taskName{
-//     color: white;
-// }
+.gantt-container .popup-wrapper {
+    width: 200px !important; /* Önceki kod: width: 200px !important; */
+    padding: 0; /* Önceki kod: padding: 0 5px; */
+}
+.gantt .bar-wrapper:hover .handle {
+    display: block;
+    visibility: visible !important;
+}
+
+.gantt .bar-wrapper:hover .progress {
+    display: block;
+    visibility: visible !important;
+}
+
+.gantt .bar-wrapper:hover .right {
+    display: block;
+    visibility: visible !important;
+}
+
+.gantt .bar-wrapper .bar {
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.gantt .bar-label {
+    pointer-events: auto;
+    cursor: pointer;
+}
 
 </style>

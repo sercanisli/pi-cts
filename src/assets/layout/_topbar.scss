@@ -58,7 +58,11 @@
 
         span {
             font-size: 1rem;
-            display: none;
+            display:block;
+
+            .spanDiv{
+                display: none ;
+            }
         }
     }
 

@@ -10,6 +10,16 @@ async function getAllProjects(){
     }
 }
 
+async function getAllLimitedProjects(){
+    try {
+        const response = await requestsApi('projects/GetAllLimitedProjectAsync');
+        return response.json();
+    } catch (error) {
+        console.error('Error fetching limited projects:', error.message);
+        throw error;
+    }
+}
+
 async function getOneProject(id){
     try {
         const response = await requestsApi(`projects/${id}`);
@@ -58,4 +68,4 @@ async function deleteProject(id){
     }
 }
 
-export { getAllProjects, getOneProject, createProject, updateProject, deleteProject}
+export { getAllProjects, getAllLimitedProjects, getOneProject, createProject, updateProject, deleteProject}
