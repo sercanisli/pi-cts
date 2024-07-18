@@ -94,34 +94,6 @@ export default {
 };
 </script>
 
-<style>
-.ganttGroup {
-    display: flex;
-}
+<style scoped>
 
-.dataTable {
-    margin-top: 55px;
-    border-collapse: collapse;
-    width: 100%;
-}
-
-.dataTable th,
-.dataTable td {
-    padding: 8px;
-    height: 38px;
-    align-items: center;
-    padding: 0px;
-}
-
-.table th {
-    background-color: #ffffff;
-}
-
-.table tbody tr:nth-child(even) {
-    background-color: #f5f5f5;
-}
-
-.table tbody tr:nth-child(odd) {
-    background-color: #ffffff;
-}
 </style>

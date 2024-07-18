@@ -267,7 +267,7 @@ export default {
                         });
                     }
                 } else {
-                    this.updateTask(projectId, normalizedName, dependenciesIds, responsibleIds);
+                    this.update(projectId, normalizedName, dependenciesIds, responsibleIds);
                 }
                 this.clearTaskDialog();
                 this.getTasks(projectId);
@@ -314,10 +314,11 @@ export default {
             this.clearTaskDialog();
 
             this.id = updateTask.id;
+            console.log(this.id)
             this.projectId = updateTask.projectId;
             this.name = updateTask.name;
-            this.selectedStartDate = updateTask.start;
-            this.selectedEndDate = updateTask.end;
+            this.selectedStartDate = new Date(updateTask.start);
+            this.selectedEndDate = new Date(updateTask.end);
             this.description = updateTask.description;
 
             this.selectedResponsible = this.users.filter((user) => updateTask.users.includes(user.userName));
@@ -325,9 +326,10 @@ export default {
 
             this.taskDialog = true;
         },
-        async updateTask(projectId, normalizedName, dependenciesIds, responsibleIds) {
+        async update(projectId, normalizedName, dependenciesIds, responsibleIds) {
             try {
                 const updatedTask = {
+                    //progress ekle
                     id: this.id,
                     projectId: projectId,
                     name: normalizedName,
@@ -439,6 +441,9 @@ export default {
                     }
                 }
                 this.debugEventLog = [];
+
+                this.getFisrtStartDate();
+                this.getLastEndDate();
             })
         },
         getLastEndDate() {
