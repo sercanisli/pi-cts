@@ -28,6 +28,8 @@
                                 </p>
                                 <p>Başlama Tarihi : {{ getDate(item.startDate) }}</p>
                                 <p>Bitiş Tarihi : {{ getDate(item.endDate) }}</p>
+                                <p>İlerleme: %{{ item.progress }}</p>
+
                                 <p style="text-decoration: underline; cursor: pointer" class="text-blue-500" @click="goToTask(item.id)">Proje görevleri <i class="pi pi-arrow-right ml-2"></i></p>
                                 <div class="flex gap-4 mt-1">
                                     <Button icon="pi pi-pencil" severity="success" class="w-full" @click="editProject(item)" />
@@ -78,10 +80,12 @@
 <script>
 import { getAllProjects, updateProject, createProject, deleteProject } from '../../../service/fetch/projectsApi';
 import { getAllLimitedCompanies } from '../../../service/fetch/comapniesApi';
+import { getAllTasksByProjectId } from '../../../service/fetch/tasksApi'
 export default {
     data() {
         return {
             projects: [],
+            tasks:[],
             companies: [],
             displayedCards: [],
             currentPage: 0,
@@ -106,7 +110,12 @@ export default {
         async getPorjets() {
             try {
                 const data = await getAllProjects();
+                for (const d of data) {
+                    const tasks = await getAllTasksByProjectId(d.id);
+                    this.tasks.push(...tasks);
+                }
                 this.projects = data;
+                await this.calculateProjectProgress();
             } catch (error) {
                 console.error('Error fetching projects:', error);
             }
@@ -251,7 +260,36 @@ export default {
             const year = newDate.getFullYear();
 
             return `${day.toString()}/${month.toString()}/${year}`;
-        }
+        },
+        async calculateProjectProgress() {
+            for (const project of this.projects) {
+                const projectTasks = this.tasks.filter(task => task.projectId === project.id);
+                
+                let totalDays = 0;
+                let completedDays = 0;
+                
+                for (const task of projectTasks) {
+                    const startDate = new Date(task.startDate);
+                    const endDate = new Date(task.endDate);
+                    const taskDays = (endDate - startDate) / (1000 * 60 * 60 * 24);
+                    
+                    totalDays += taskDays;
+                    
+                    if (task.completed) {
+                        completedDays += taskDays; 
+                    }
+                }
+                
+                if (totalDays > 0) {
+                    const progress = (completedDays / totalDays) * 100;
+                    project.progress = Math.round(progress); 
+                } else {
+                    project.progress = 0; 
+                }
+                
+                await updateProject(project.id, project);
+            }
+        },
     },
     created() {
         this.getPorjets().then(() => {

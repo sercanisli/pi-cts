@@ -27,7 +27,7 @@
                             <h5 class="m-0">Şubeler</h5>
                             <IconField iconPosition="left" class="block mt-2 md:mt-0">
                                 <InputIcon class="pi pi-search" />
-                                <InputText v-model="globalFilter" class="w-full sm:w-auto"/>
+                                <InputText v-model="globalFilter" class="w-full sm:w-auto" placeholder="Şirket ya da Şube adı"/>
                             </IconField>
                         </div>
                     </template>
@@ -274,7 +274,10 @@ export default {
     },
     computed:{
         filteredBranches() {
-            return this.branches.filter(branch => branch.branchName.toLowerCase().includes(this.globalFilter.toLowerCase()));
+            return this.branches.filter((branch) => {
+                const companyName = this.getCompanyName(branch.companyId);
+                return companyName.toLowerCase().includes(this.globalFilter.toLowerCase()) || branch.branchName.toLowerCase().includes(this.globalFilter.toLowerCase());
+            })
         }
     }
 }

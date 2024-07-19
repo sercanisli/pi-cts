@@ -27,7 +27,7 @@
                            <h5 class="m-0">Yetkili Kişiler</h5>
                            <IconField iconPosition="left" class="block mt-2 md:mt-0">
                                <InputIcon class="pi pi-search" />
-                               <InputText v-model="globalFilter" class="w-full sm:w-auto"/>
+                               <InputText v-model="globalFilter" class="w-full sm:w-auto" placeholder="Yetkili Kişi, Şirket ya da Şube"/>
                            </IconField>
                        </div>
                    </template>
@@ -344,7 +344,13 @@ export default {
    },
    computed:{
        filteredPersons() {
-           return this.persons.filter(person => person.fullName.toLowerCase().includes(this.globalFilter.toLowerCase()));
+            return this.persons.filter((person) => {
+                const branchName = this.getBranchName(person.branchId);
+                const companyName = this.getCompanyName(person.branchId);
+                return person.fullName.toLowerCase().includes(this.globalFilter.toLocaleLowerCase()) || companyName.toLocaleLowerCase().includes(this.globalFilter.toLocaleLowerCase()) || branchName.toLocaleLowerCase().includes(this.globalFilter.toLowerCase());
+            })
+
+        //    return this.persons.filter(person => person.fullName.toLowerCase().includes(this.globalFilter.toLowerCase()));
        }
    },
 }

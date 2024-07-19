@@ -2,23 +2,25 @@
     <div class="grid">
         <div class="col-12">
             <div class="card">
-                <div class="ganttGroup">
-                    <div class="col-2">
-                        <DataTable dataKey="id" :value="tasks" stripedRows tableStyle="w-full" class="dataTable">
-                            <Column field="users" header="Sorumlu" style="width: 43%">
-                                <template #body="slotProps">
-                                    <span v-if="slotProps.data.users.length > 0" v-tooltip.top="slotProps.data.users.join(', ')">
-                                        {{ getUserNames(slotProps.data) }}
-                                    </span>
-                                </template>
-                            </Column>
-                        </DataTable>
-                    </div>
-                    <div class="col-10">
-                        <Button label="Günlük" severity="secondary" @click="demoViewMode('day')" text />
-                        <Button label="Haftalık" severity="secondary" @click="demoViewMode('week')" text />
-                        <Button label="Aylık" severity="secondary" @click="demoViewMode('month')" text />
-                        <frappe-gantt id="svg" :view-mode="mode" :tasks="tasks" />
+                <div v-if="show">
+                    <div class="tasksGanttGroup">
+                        <div class="col-2">
+                            <DataTable dataKey="id" :value="tasks" stripedRows tableStyle="w-full" class="tasksDataTable">
+                                <Column field="users" header="Sorumlu" style="width: 43%">
+                                    <template #body="slotProps">
+                                        <span v-if="slotProps.data.users.length > 0" v-tooltip.top="slotProps.data.users.join(', ')">
+                                            {{ getUserNames(slotProps.data) }}
+                                        </span>
+                                    </template>
+                                </Column>
+                            </DataTable>
+                        </div>
+                        <div class="col-10">
+                            <Button label="Günlük" severity="secondary" @click="demoViewMode('day')" text />
+                            <Button label="Haftalık" severity="secondary" @click="demoViewMode('week')" text />
+                            <Button label="Aylık" severity="secondary" @click="demoViewMode('month')" text />
+                            <frappe-gantt id="svg" :view-mode="mode" :tasks="tasks" />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -41,7 +43,8 @@ export default {
         return {
             mode: 'day',
             projectId: null,
-            tasks: [{}]
+            tasks: [{}],
+            show:false
         };
     },
     created() {
@@ -53,8 +56,14 @@ export default {
             this.projectId = this.$route.params.projectId;
             try {
                 const data = await getAllTasksByProjectId(this.projectId);
-                this.tasks = data;
-                console.log(this.tasks);
+                data.forEach(d => {
+                    if(d.length<1){
+                        this.show = false;
+                    } else {
+                        this.show = true;
+                        this.tasks = data;
+                    }
+                });
             } catch (error) {
                 console.error('Error fetchimg tasks:', error);
             }
@@ -95,5 +104,13 @@ export default {
 </script>
 
 <style scoped>
+.tasksGanttGroup {
+    display: flex;
+}
 
+.tasksDataTable {
+    margin-top: 55px;
+    border-collapse: collapse;
+    width: 100%;
+}
 </style>

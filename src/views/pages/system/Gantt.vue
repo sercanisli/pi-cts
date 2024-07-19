@@ -269,6 +269,9 @@ export default {
                 } else {
                     this.update(projectId, normalizedName, dependenciesIds, responsibleIds);
                 }
+                this.getFisrtStartDate();
+                this.getLastEndDate();
+                await this.updateProject();
                 this.clearTaskDialog();
                 this.getTasks(projectId);
                 this.cancelClick();
@@ -358,6 +361,10 @@ export default {
                 }
                 this.clearTaskDialog();
                 this.cancelClick();
+                this.getFisrtStartDate();
+                this.getLastEndDate();
+                await this.updateProject();
+
             } catch (error) {
                 console.error('Error updating task:', error);
                 this.$toast.add({
@@ -444,6 +451,7 @@ export default {
 
                 this.getFisrtStartDate();
                 this.getLastEndDate();
+                await this.updateProject();
             })
         },
         getLastEndDate() {
@@ -475,16 +483,13 @@ export default {
         async updateProject() {
             this.projectId = this.$route.params.projectId;
             const project = await getOneProject(this.projectId);
-            const updatedEndDate = new Date(project.endDate);
-            updatedEndDate.setDate(updatedEndDate.getDate() - 1);
-            this.projectHeader = project.projectName;
             try {
                 const updatedProject = {
                     id: this.projectId,
                     companyId: project.companyId,
                     projectName: project.projectName,
                     startDate: this.startDate,
-                    endDate: updatedEndDate,
+                    endDate: this.endDate,
                     description: project.description,
                     statutes: project.statutes
                 };
@@ -492,6 +497,13 @@ export default {
             } catch (error) {
                 console.error('Error updating project dates:', error);
             }
+        },
+        calculateProgress(){ 
+            const completedBars  = [];
+            this.tasks.forEach(task => {
+                completedBars.push(task.progress);
+            }); 
+            console.log(completedBars);
         }
     }
 };

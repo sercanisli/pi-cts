@@ -646,7 +646,7 @@ const getUsernameFromUserInfo = (userInfo) => {
         <div class="flex align-items-center justify-content-center">
             <DataTable dataKey="id" :value="tasks" stripedRows paginator :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]" class="dialogDataTable" >
                 <Column field="taskId" header="Id" style="width: 0%"></Column>
-                <Column field="taskProjectId" header="Şirket Adı" style="width: 25%">
+                <Column field="taskProjectId" header="Proje Adı" style="width: 25%">
                     <template #body="slotProps"> 
                         <span v-if="slotProps.data.taskProjectId">
                             {{getProjectName(slotProps.data.taskProjectId)}}
